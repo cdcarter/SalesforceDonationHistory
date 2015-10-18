@@ -27,9 +27,9 @@
     <div class="slds">
     <apex:dataTable value="{!FiscalYears}" var="row"  styleClass="slds-table slds-table--bordered slds-table--striped slds-no-row-hover slds-scrollable--y" headerclass="slds-text-heading--label" rowClasses="slds-text-body--small" footerclass="bold">
         <apex:column >
-            <apex:facet name="header">Fiscal Year</apex:facet>
+            <apex:facet name="header">{!$Label.Year_Header}</apex:facet>
             <apex:outputText value="{!donationRows[row].fiscalYear}"/>
-            <apex:facet name="footer">All Time</apex:facet>
+            <apex:facet name="footer">{!$Label.All_Time_Footer}</apex:facet>
         </apex:column>
         <apex:repeat value="{!recordTypes}" var="rt">
             <apex:column >
@@ -46,7 +46,7 @@
         </apex:repeat>
         
         <apex:column >
-            <apex:facet name="header">Account Total</apex:facet>
+            <apex:facet name="header">{!$Label.Types_Total_Header}</apex:facet>
             <apex:outputText value="{0, number, currency}">
             	<apex:param value="{!donationRows[row].TypeTotal}"/>
             </apex:outputText>
@@ -72,7 +72,7 @@
         </apex:repeat> 
         
         <apex:column >
-            <apex:facet name="header">ContactRole Total</apex:facet>
+            <apex:facet name="header">{!$Label.Contact_Role_Footer}</apex:facet>
             <apex:outputText value="{0, number, currency}">
             	<apex:param value="{!donationRows[row].RoleTotal}"/>
             </apex:outputText>

@@ -14,8 +14,15 @@
         <name>CustomObject</name>
     </types>
     <types>
-        <name>SLDS092</name>
-        <members>StaticResource</members>
+        <members>All_Time_Footer</members>
+        <members>Contact_Role_Footer</members>
+        <members>Types_Total_Header</members>
+        <members>Year_Header</members>
+        <name>CustomLabel</name>
+    </types>
+    <types>
+        <members>SLDS092</members>
+        <name>StaticResource</name>
     </types>
     <version>35.0</version>
 </Package>
