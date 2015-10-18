@@ -1,4 +1,4 @@
-<apex:page standardController="Account" extensions="DonationHistoryControllerExtension" showHeader="false" sidebar="false">
+<apex:page standardController="Account" extensions="DonationHistoryControllerExtension" standardStylesheets="false" showHeader="false" sidebar="false">
 <!-- 
     Donation History Pagelet
 	This pagelet uses the Account standard controller to display donation
@@ -20,10 +20,12 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
     <style>
         .bold {font-weight: bold;}
     </style>
-    <apex:dataTable value="{!FiscalYears}" var="row" cellpadding="2" headerclass="pbSubheader secondaryPalette" footerclass="bold">
+    <div class="slds">
+    <apex:dataTable value="{!FiscalYears}" var="row"  styleClass="slds-table slds-table--bordered slds-table--striped slds-no-row-hover slds-scrollable--y" headerclass="slds-text-heading--label" rowClasses="slds-text-body--small" footerclass="bold">
         <apex:column >
             <apex:facet name="header">Fiscal Year</apex:facet>
             <apex:outputText value="{!donationRows[row].fiscalYear}"/>
@@ -81,4 +83,5 @@
             </apex:facet>
         </apex:column>
     </apex:dataTable>
+    </div>
 </apex:page>
