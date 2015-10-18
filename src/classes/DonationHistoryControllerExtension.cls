@@ -71,7 +71,6 @@ public with sharing class DonationHistoryControllerExtension {
             contactIds.add(c.Id);
         }
         
-        // TODO: custom setting for FY vs CY
         // TODO: custom setting for name of field to group by (dynamic apex)
         // TODO: custom setting for record types to withhold
 
@@ -85,8 +84,8 @@ public with sharing class DonationHistoryControllerExtension {
                                         'SUM(Opportunity.Amount) TotalAmount, Role role ' +
                                         'FROM OpportunityContactRole ' + 
                                         'WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 '+
-                                        'AND ContactId IN: contactIds '+
-                                        'AND Role NOT IN :rolesToExclude '+
+                                        'AND ContactId IN : contactIds '+
+                                        'AND Role NOT IN : rolesToExclude '+
                                         'GROUP BY CUBE(FISCAL_YEAR(Opportunity.CloseDate), Role) '+
                                         'ORDER BY FISCAL_YEAR(Opportunity.CloseDate) DESC';       
 
