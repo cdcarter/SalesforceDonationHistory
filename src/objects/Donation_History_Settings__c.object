@@ -39,6 +39,19 @@
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
+    <fields>
+        <fullName>Opportunity_Type_Field__c</fullName>
+        <defaultValue>&quot;RecordType.Name&quot;</defaultValue>
+        <description>This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices.</inlineHelpText>
+        <label>Opportunity Type Field</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
     <label>Donation History Pagelet Settings</label>
     <visibility>Public</visibility>
 </CustomObject>

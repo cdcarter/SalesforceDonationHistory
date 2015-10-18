@@ -66,10 +66,14 @@ public with sharing class DonationHistoryControllerExtension {
         // set up the settings
         Boolean isCalendarYear = false;
         List<String> rolesToExclude = new List<String>{'Donor'};
+        String typeField = 'RecordType.Name';
         Donation_History_Settings__c settings = Donation_History_Settings__c.getInstance();
         if(settings != null) {
             if(settings.IsCalendarYear__c != null && settings.IsCalendarYear__c == True) {
                 isCalendarYear = true;
+            }
+            if(settings.Opportunity_Type_Field__c != null) {
+                typeField = settings.Opportunity_Type_Field__c;
             }
             if(contactSummary) {
                 if(settings.Contact_Roles_to_Exclude__c != null) {
@@ -99,11 +103,11 @@ public with sharing class DonationHistoryControllerExtension {
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
         // TODO: possibly limit RT summary to just primary contact donations
-        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name typeName, SUM(Amount) TotalAmount, '+
-                                   'GROUPING(RecordType.Name) grpType ' +
+        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+typeField+' typeName, SUM(Amount) TotalAmount, '+
+                                   'GROUPING('+typeField+') grpType ' +
                                    'FROM Opportunity ' +
                                    'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
-                                   'GROUP BY CUBE(FISCAL_YEAR(CloseDate), RecordType.Name) ' +
+                                   'GROUP BY CUBE(FISCAL_YEAR(CloseDate), '+typeField+') ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
 		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
@@ -127,12 +131,13 @@ public with sharing class DonationHistoryControllerExtension {
         // Get all represeted RTs and OCRs.
         // if we allow arbitrary field name to group by, how do we get all the possible values
         // even ones not in this set?
-        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name 
-                                                    FROM Opportunity 
-                                                    WHERE IsWon = True 
-                                                      AND (Amount > 0 OR Amount < 0 ) 
-                                                      AND AccountId = :accountId 
-                                                    GROUP BY RecordType.Name];
+        String recordTypesSummaryQuery = 'SELECT Count(Id), '+typeField+' name ' +
+                                         'FROM Opportunity '+
+                                         'WHERE IsWon = True  AND (Amount > 0 OR Amount < 0 ) '+
+                                         'AND AccountId = :accountId '+
+                                         'GROUP BY '+typeField;
+
+        List<AggregateResult> recordTypesSummary = Database.query(recordTypesSummaryQuery);
        	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role 
                                                      FROM OpportunityContactRole 
                                                      WHERE Opportunity.IsWon = True 
@@ -154,24 +159,43 @@ public with sharing class DonationHistoryControllerExtension {
         
         for(AggregateResult agg : cubedSummary) {
             // a row can contain FY, RTName, Both, or neither
-            if(agg.get('fy')!= null && agg.get('typeName') != null) {
-                // in the case of both, we want to set the RT total for that fiscal year
+            if(agg.get('fy')!= null && agg.get('grpType') == 0) {
+                // in the case of a fiscal year and grpType 0 (indicating this is a real type)
+                // we want to set the RT total for that fiscal year
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
                         new DonationRow(Integer.valueOf(agg.get('fy')),types,contactRoles)
                     );
                 }
+                String typeName;
+                if( (String)agg.get('typeName')!=null ) {
+                    typeName = (String)agg.get('typeName');
+                } else {
+                    typeName = '--';
+                    if(!(new Set<String>(types)).contains('--')) {
+                        types.add('--');
+                    }
+                }
                 if(agg.get('TotalAmount') != null) {
                     donationRows.get(Integer.valueOf(agg.get('fy'))).typeToTotal.put(
-                        (String)agg.get('typeName'),
+                        typeName,
                         (Decimal)agg.get('TotalAmount')
                     );
                 }
-            } else if(agg.get('fy') == null && agg.get('typeName') != null) {
+            } else if(agg.get('fy') == null && agg.get('grpType') == 0) {
                 // in the case of just RTName, we want to set the all time RT total
-                typeTotals.put((String)agg.get('typeName'),(Decimal)agg.get('TotalAmount'));
-            } else if(agg.get('fy') != null && agg.get('typeName') == null && agg.get('grpType') == 1) {
+                String typeName;
+                if( (String)agg.get('typeName')!=null ) {
+                    typeName = (String)agg.get('typeName');
+                } else {
+                    typeName = '--';
+                    if(!(new Set<String>(types)).contains('--')) {
+                        types.add('--');
+                    }
+                }
+                typeTotals.put(typeName,(Decimal)agg.get('TotalAmount'));
+            } else if(agg.get('fy') != null && agg.get('grpType') == 1) {
                 // in the case of just FY, we want to set the fiscal year total
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
@@ -180,7 +204,7 @@ public with sharing class DonationHistoryControllerExtension {
                     );
                 }
 				donationRows.get(Integer.valueOf(agg.get('fy'))).TypesTotal = (Decimal)agg.get('TotalAmount');
-            } else if(agg.get('fy') == null && agg.get('typeName') == null) {
+            } else if(agg.get('fy') == null && agg.get('grpType') == 1) {
                 // in the case of neither, we set the AllTime total
                 this.AllTime = (Decimal)agg.get('TotalAmount');
             }
