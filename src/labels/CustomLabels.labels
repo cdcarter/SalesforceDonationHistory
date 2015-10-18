@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
     <labels>
+        <fullName>Alert_Account_No_Hard_Credits</fullName>
+        <categories>donationhistory, alert</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Alert Account No Hard Credits</shortDescription>
+        <value>This household has no direct donations to display.</value>
+    </labels>
+    <labels>
+        <fullName>Alert_Account_No_Soft_Credit</fullName>
+        <categories>donationhistory, alert</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Alert Account No Soft Credit</shortDescription>
+        <value>This household has no soft credits to display.</value>
+    </labels>
+    <labels>
+        <fullName>Alert_Contact_No_Soft_Credits</fullName>
+        <categories>donationhistory, alert</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Alert Contact No Soft Credits</shortDescription>
+        <value>This contact has no soft credits to display.</value>
+    </labels>
+    <labels>
+        <fullName>Alert_No_Data</fullName>
+        <categories>donationhistory, alert</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Alert No Data</shortDescription>
+        <value>This record has no gifts to display.</value>
+    </labels>
+    <labels>
         <fullName>All_Time_Footer</fullName>
         <categories>donationhistory, footers</categories>
         <language>en_US</language>

@@ -19,6 +19,10 @@
 		<members>Contact_Role_Footer</members>
 		<members>Types_Total_Header</members>
 		<members>Year_Header</members>
+		<members>Alert_No_Data</members>
+		<members>Alert_Account_No_Soft_Credit</members>
+		<members>Alert_Account_No_Hard_Credits</members>
+		<members>Alert_Contact_No_Soft_Credits</members>
 		<name>CustomLabel</name>
 	</types>
 	<types>
