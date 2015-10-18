@@ -50,54 +50,95 @@ public with sharing class DonationHistoryControllerExtension {
         this.rtTotals = new Map<String,Decimal>();
         this.roleTotals = new Map<String,Decimal>();
         this.objectId = stdController.getId();
+
+
+        // set up the settings
+        Boolean isCalendarYear = false;
+        List<String> rolesToExclude = new List<String>{'Donor'};
         Donation_History_Settings__c settings = Donation_History_Settings__c.getInstance();
+        if(settings != null) {
+            if(settings.IsCalendarYear__c != null && settings.IsCalendarYear__c == True) {
+                isCalendarYear = true;
+            }
+            if(settings.Account_Roles_to_Exclude__c != null) {
+                rolesToExclude = settings.Account_Roles_to_Exclude__c.split(';');
+            }
+        }
+
+        // get all contacts in this account for soft credit summarization.
+        List<Id> contactIds = new List<Id>();
+        for(Contact c : [SELECT Id FROM Contact WHERE AccountId = :this.objectId]){
+            contactIds.add(c.Id);
+        }
         
         // TODO: custom setting for FY vs CY
         // TODO: custom setting for name of field to group by (dynamic apex)
         // TODO: custom setting for record types to withhold
-        List<AggregateResult> cubedSummary = [SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name rtName, SUM(Amount) TotalAmount FROM Opportunity WHERE IsWon = True AND Amount != 0 AND AccountId = :this.objectId GROUP BY CUBE(FISCAL_YEAR(CloseDate), RecordType.Name) ORDER BY FISCAL_YEAR(CloseDate) DESC];
-    	List<Id> contactIds = new List<Id>();
-        for(Contact c : [SELECT Id FROM Contact WHERE AccountId = :this.objectId]){
-            contactIds.add(c.Id);
-        }
-		List<AggregateResult> cubedContactRoles = [SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, SUM(Opportunity.Amount) TotalAmount, Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 AND ContactId IN: contactIds AND Role !='Donor' GROUP BY CUBE(FISCAL_YEAR(Opportunity.CloseDate), Role) ORDER BY FISCAL_YEAR(Opportunity.CloseDate) DESC];       
 
-        // should this get ALL opp RTs?
+        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name rtName, SUM(Amount) TotalAmount '+
+                                   'FROM Opportunity ' +
+                                   'WHERE IsWon = True AND Amount != 0 AND AccountId = :objectId ' +
+                                   'GROUP BY CUBE(FISCAL_YEAR(CloseDate), RecordType.Name) ' +
+                                   'ORDER BY FISCAL_YEAR(CloseDate) DESC';
+
+		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
+                                        'SUM(Opportunity.Amount) TotalAmount, Role role ' +
+                                        'FROM OpportunityContactRole ' + 
+                                        'WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 '+
+                                        'AND ContactId IN: contactIds '+
+                                        'AND Role NOT IN :rolesToExclude '+
+                                        'GROUP BY CUBE(FISCAL_YEAR(Opportunity.CloseDate), Role) '+
+                                        'ORDER BY FISCAL_YEAR(Opportunity.CloseDate) DESC';       
+
+        if(isCalendarYear) {
+            cubedSummaryQuery = cubedSummaryQuery.replace('FISCAL_YEAR', 'CALENDAR_YEAR');
+            cubedContactRolesQuery = cubedContactRolesQuery.replace('FISCAL_YEAR', 'CALENDAR_YEAR');
+        }
+
+        List<AggregateResult> cubedSummary = Database.query(cubedSummaryQuery);
+        List<AggregateResult> cubedContactRoles = Database.query(cubedContactRolesQuery);
+        
+        // Get all represeted RTs and OCRs.
         // if we allow arbitrary field name to group by, how do we get all the possible values, even ones not in this set?
         List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name FROM Opportunity WHERE IsWon = True AND Amount != 0 AND AccountId = :objectId GROUP BY RecordType.Name];
-       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 AND ContactId IN: contactIds AND Role !='Donor' GROUP BY Role];
-        // create the list of RT Names 
+       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 AND ContactId IN: contactIds AND Role NOT IN :rolesToExclude GROUP BY Role];
+        
+        // create the list of typeNames 
         this.recordTypes = new List<String>();
        	for(AggregateResult agg : recordTypesSummary) {
             recordTypes.add((string)agg.get('name'));
         }
+        // and create the list of contactRoleNames
         this.contactRoles = new List<String>();
         for(AggregateResult agg : contactRolesSummary) {
             contactRoles.add((string)agg.get('role'));
         }
         
         for(AggregateResult agg : cubedSummary) {
-			// initial pass only looking at the rows with both FY and RT
+            // a row can contain FY, RTName, Both, or neither
             if(agg.get('fy')!= null && agg.get('rtName') != null) {
+                // in the case of both, we want to set the RT total for that fiscal year
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
                 }
                 donationRows.get(Integer.valueOf(agg.get('fy'))).rtToTotal.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
             } else if(agg.get('fy') == null && agg.get('rtName') != null) {
+                // in the case of just RTName, we want to set the all time RT total
                 rtTotals.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
             } else if(agg.get('fy') != null && agg.get('rtName') == null) {
+                // in the case of just FY, we want to set the fiscal year total
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
                 }
 				donationRows.get(Integer.valueOf(agg.get('fy'))).TypeTotal = (Decimal)agg.get('TotalAmount');
             } else if(agg.get('fy') == null && agg.get('rtName') == null) {
+                // in the case of neither, we set the AllTime total
                 this.AllTime = (Decimal)agg.get('TotalAmount');
             }
         }
         
-        // now that we've figured out the record types, let's do soft credits
+        // now that we've figured out the record types, let's do soft credits. exact same logic here.
         for(AggregateResult agg : cubedContactRoles) {
-			// initial pass only looking at the rows with both FY and RT
             if(agg.get('fy')!= null && agg.get('role') != null) {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
@@ -118,7 +159,7 @@ public with sharing class DonationHistoryControllerExtension {
         // the following is a big of voodoo for determing any missing fys and adding them to the sequence
         // it's a complicated set of loops, so i'm leaving in the debug statements in case anyone
         // has to figure out what is going on. They're really great and explain the algorithm.
-		List<Integer> temp = new List<Integer>(donationRows.keySet());
+		List<Integer> temp = new List<Integer>(donationRows.keySet()); // donationRows.keySet is a DESC sorted list of years
        	this.FiscalYears = new List<Integer>();
         for(Integer i=0; i < temp.size(); i++) {
             //if(i>0)
