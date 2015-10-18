@@ -197,6 +197,7 @@ public with sharing class DonationHistoryControllerExtension {
                 typeTotals.put(typeName,(Decimal)agg.get('TotalAmount'));
             } else if(agg.get('fy') != null && agg.get('grpType') == 1) {
                 // in the case of just FY, we want to set the fiscal year total
+                // the order we parse the results may cause this code path to never execute
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
@@ -228,6 +229,7 @@ public with sharing class DonationHistoryControllerExtension {
             } else if(agg.get('fy') == null && agg.get('role') != null) {
                 roleTotals.put((String)agg.get('role'),(Decimal)agg.get('TotalAmount'));
             } else if(agg.get('fy') != null && agg.get('role') == null) {
+                // the order we parse the results may cause this code path to never execute
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
