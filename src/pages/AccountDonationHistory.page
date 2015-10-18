@@ -84,5 +84,12 @@
             </apex:facet>
         </apex:column>
     </apex:dataTable>
+
+    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" html-role="alert" rendered="{!FiscalYears.size == 0}">
+        <span class="slds-assistive-text">Info</span>
+
+        <h2>This household has no gifts to display.</h2>
+    </apex:outputPanel>
+
     </div>
 </apex:page>
