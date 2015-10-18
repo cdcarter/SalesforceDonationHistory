@@ -1,6 +1,7 @@
 /*
     Copyright (c)2015 Christian Carter (@cdcarter)
-    Inspired by Contact Giving Totals, Evan Callahan, copyright (c) 2010 Groundwire https://github.com/Groundwire/GWBase/blob/master/src/pages/ContactTotalsByRT.page
+    Inspired by Contact Giving Totals, Evan Callahan, copyright (c) 2010 Groundwire 
+    https://github.com/Groundwire/GWBase/blob/master/src/pages/ContactTotalsByRT.page
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -107,7 +108,8 @@ public with sharing class DonationHistoryControllerExtension {
 		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
                                         'SUM(Opportunity.Amount) TotalAmount, Role role ' +
                                         'FROM OpportunityContactRole ' + 
-                                        'WHERE Opportunity.IsWon = True AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0) '+
+                                        'WHERE Opportunity.IsWon = True '+
+                                        'AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0) '+
                                         'AND ContactId IN : contactIds '+
                                         'AND Role NOT IN : rolesToExclude '+
                                         'GROUP BY CUBE(FISCAL_YEAR(Opportunity.CloseDate), Role) '+
@@ -122,9 +124,21 @@ public with sharing class DonationHistoryControllerExtension {
         List<AggregateResult> cubedContactRoles = Database.query(cubedContactRolesQuery);
         
         // Get all represeted RTs and OCRs.
-        // if we allow arbitrary field name to group by, how do we get all the possible values, even ones not in this set?
-        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name FROM Opportunity WHERE IsWon = True AND (Amount > 0 OR Amount < 0 ) AND AccountId = :accountId GROUP BY RecordType.Name];
-       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0)  AND ContactId IN: contactIds AND Role NOT IN :rolesToExclude GROUP BY Role];
+        // if we allow arbitrary field name to group by, how do we get all the possible values
+        // even ones not in this set?
+        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name 
+                                                    FROM Opportunity 
+                                                    WHERE IsWon = True 
+                                                      AND (Amount > 0 OR Amount < 0 ) 
+                                                      AND AccountId = :accountId 
+                                                    GROUP BY RecordType.Name];
+       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role 
+                                                     FROM OpportunityContactRole 
+                                                     WHERE Opportunity.IsWon = True 
+                                                       AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0)  
+                                                       AND ContactId IN: contactIds 
+                                                       AND Role NOT IN :rolesToExclude 
+                                                     GROUP BY Role];
         
         // create the list of typeNames 
         this.recordTypes = new List<String>();
@@ -142,10 +156,16 @@ public with sharing class DonationHistoryControllerExtension {
             if(agg.get('fy')!= null && agg.get('rtName') != null) {
                 // in the case of both, we want to set the RT total for that fiscal year
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
-                    donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
+                    donationRows.put(
+                        Integer.valueOf(agg.get('fy')),
+                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                    );
                 }
                 if(agg.get('TotalAmount') != null) {
-                    donationRows.get(Integer.valueOf(agg.get('fy'))).rtToTotal.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
+                    donationRows.get(Integer.valueOf(agg.get('fy'))).rtToTotal.put(
+                        (String)agg.get('rtName'),
+                        (Decimal)agg.get('TotalAmount')
+                    );
                 }
             } else if(agg.get('fy') == null && agg.get('rtName') != null) {
                 // in the case of just RTName, we want to set the all time RT total
@@ -153,7 +173,10 @@ public with sharing class DonationHistoryControllerExtension {
             } else if(agg.get('fy') != null && agg.get('rtName') == null) {
                 // in the case of just FY, we want to set the fiscal year total
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
-                    donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
+                    donationRows.put(
+                        Integer.valueOf(agg.get('fy')),
+                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                    );
                 }
 				donationRows.get(Integer.valueOf(agg.get('fy'))).TypeTotal = (Decimal)agg.get('TotalAmount');
             } else if(agg.get('fy') == null && agg.get('rtName') == null) {
@@ -166,16 +189,25 @@ public with sharing class DonationHistoryControllerExtension {
         for(AggregateResult agg : cubedContactRoles) {
             if(agg.get('fy')!= null && agg.get('role') != null) {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
-                    donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
+                    donationRows.put(
+                        Integer.valueOf(agg.get('fy')),
+                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                    );
                 }
                 if(agg.get('TotalAmount') != null) {
-                    donationRows.get(Integer.valueOf(agg.get('fy'))).roleToTotal.put((String)agg.get('role'),(Decimal)agg.get('TotalAmount'));
+                    donationRows.get(Integer.valueOf(agg.get('fy'))).roleToTotal.put(
+                        (String)agg.get('role'),
+                        (Decimal)agg.get('TotalAmount')
+                    );
                 }
             } else if(agg.get('fy') == null && agg.get('role') != null) {
                 roleTotals.put((String)agg.get('role'),(Decimal)agg.get('TotalAmount'));
             } else if(agg.get('fy') != null && agg.get('role') == null) {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
-                    donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
+                    donationRows.put(
+                        Integer.valueOf(agg.get('fy')),
+                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                    );
                 }
 				donationRows.get(Integer.valueOf(agg.get('fy'))).RoleTotal = (Decimal)agg.get('TotalAmount');
             } else if(agg.get('fy') == null && agg.get('role') == null) {
@@ -186,11 +218,15 @@ public with sharing class DonationHistoryControllerExtension {
         // the following is a big of voodoo for determing any missing fys and adding them to the sequence
         // it's a complicated set of loops, so i'm leaving in the debug statements in case anyone
         // has to figure out what is going on. They're really great and explain the algorithm.
-		List<Integer> temp = new List<Integer>(donationRows.keySet()); // donationRows.keySet is a DESC sorted list of years
+
+        // donationRows.keySet is a DESC sorted list of years
+		List<Integer> temp = new List<Integer>(donationRows.keySet()); 
        	this.FiscalYears = new List<Integer>();
         for(Integer i=0; i < temp.size(); i++) {
             //if(i>0)
-            //	system.debug(String.format('temp[i] = {0}, fy[size-1] = {1}',new List<String>{String.valueOf(temp[i]+1),String.valueOf(this.FiscalYears[this.FiscalYears.size()-1])}));
+            //	system.debug(String.format('temp[i] = {0}, fy[size-1] = {1}',
+            //    new List<String>{String.valueOf(temp[i]+1),
+            //    String.valueOf(this.FiscalYears[this.FiscalYears.size()-1])}));
             
             if(i>0 && temp[i]+1 != this.FiscalYears[this.FiscalYears.size()-1]) {
                // system.debug('missing yrs detected');

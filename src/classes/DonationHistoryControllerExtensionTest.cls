@@ -20,8 +20,12 @@
         oppsToInsert.add(new Opportunity(Name='1', StageName='Posted',Amount=100,CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId));
         oppsToInsert.add(new Opportunity(Name='2', StageName='Posted',Amount=100,CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId2));
         oppsToInsert.add(new Opportunity(Name='3', StageName='Posted',Amount=200,CloseDate = Date.newInstance(2013,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId));
+        // next one is special, is for acc2 but will have ocr to acc1
         oppsToInsert.add(new Opportunity(Name='4', StageName='Posted',Amount=200,CloseDate = Date.newInstance(2013,orgFiscalMonth,01), AccountId = acc2.Id, RecordTypeId=rtId));
-		insert oppsToInsert;
+        // include opp with no amount
+        oppsToInsert.add(new Opportunity(Name='2', StageName='Posted',CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId2));
+
+        insert oppsToInsert;
         
         insert new OpportunityContactRole(OpportunityId=oppsToInsert[3].Id,ContactId=con.Id,Role='Influencer');
     }
