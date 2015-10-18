@@ -25,8 +25,12 @@
  * a constituent, summarized by both RecordType and Fiscal Year.
  */
 public with sharing class DonationHistoryControllerExtension {
-    // the Id of the SObject passed in by the Standard Controller
+    // the Id of the Account we are working with
+    private final Id accountId;
+    // the Id of the object passed in to the standard controller
     private final Id objectId;
+    // true if this extension was invoked with a Contact instead of an Account
+    private Boolean contactSummary;
     // the rows of the datatable, key is FiscalYear, value is a compound
     // object showing the totals for each recordtype
     public Map<Integer,DonationRow> donationRows {get;set;}
@@ -50,7 +54,13 @@ public with sharing class DonationHistoryControllerExtension {
         this.rtTotals = new Map<String,Decimal>();
         this.roleTotals = new Map<String,Decimal>();
         this.objectId = stdController.getId();
-
+        if(stdController.getRecord().getSObjectType() == Account.sObjectType) {
+            this.accountId = this.objectId;
+            this.contactSummary = false;
+        } else if(stdController.getRecord().getSObjectType() == Contact.sObjectType) {
+            this.accountId = (Id)stdController.getRecord().get('AccountId');
+            this.contactSummary = true;
+        }
 
         // set up the settings
         Boolean isCalendarYear = false;
@@ -60,23 +70,37 @@ public with sharing class DonationHistoryControllerExtension {
             if(settings.IsCalendarYear__c != null && settings.IsCalendarYear__c == True) {
                 isCalendarYear = true;
             }
-            if(settings.Account_Roles_to_Exclude__c != null) {
-                rolesToExclude = settings.Account_Roles_to_Exclude__c.split(';');
+            if(contactSummary) {
+                if(settings.Contact_Roles_to_Exclude__c != null) {
+                    rolesToExclude = settings.Contact_Roles_to_Exclude__c.split(';');
+                }
+            } else {
+                if(settings.Account_Roles_to_Exclude__c != null) {
+                    rolesToExclude = settings.Account_Roles_to_Exclude__c.split(';');
+                }
             }
         }
 
-        // get all contacts in this account for soft credit summarization.
+        // if account level, get all the accounts contacts for soft credits.
         List<Id> contactIds = new List<Id>();
-        for(Contact c : [SELECT Id FROM Contact WHERE AccountId = :this.objectId]){
-            contactIds.add(c.Id);
+        if(contactSummary) {
+            contactIds.add(objectId);
+        } else {
+            for(Contact c : [SELECT Id FROM Contact WHERE AccountId = :this.accountId]){
+                contactIds.add(c.Id);
+            } 
         }
+
         
         // TODO: custom setting for name of field to group by (dynamic apex)
         // TODO: custom setting for record types to withhold
 
+        // right now, we're grabbing the full account's donations even for a contact level request.
+        // question out to caroline whether or not that's appropriate
+        // TODO: possibly limit RT summary to just primary contact donations
         String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name rtName, SUM(Amount) TotalAmount '+
                                    'FROM Opportunity ' +
-                                   'WHERE IsWon = True AND Amount != 0 AND AccountId = :objectId ' +
+                                   'WHERE IsWon = True AND Amount != 0 AND AccountId = :accountId ' +
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), RecordType.Name) ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
@@ -99,7 +123,7 @@ public with sharing class DonationHistoryControllerExtension {
         
         // Get all represeted RTs and OCRs.
         // if we allow arbitrary field name to group by, how do we get all the possible values, even ones not in this set?
-        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name FROM Opportunity WHERE IsWon = True AND Amount != 0 AND AccountId = :objectId GROUP BY RecordType.Name];
+        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name FROM Opportunity WHERE IsWon = True AND Amount != 0 AND AccountId = :accountId GROUP BY RecordType.Name];
        	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 AND ContactId IN: contactIds AND Role NOT IN :rolesToExclude GROUP BY Role];
         
         // create the list of typeNames 
@@ -207,7 +231,7 @@ public with sharing class DonationHistoryControllerExtension {
             for(String rt : recordTypes) {
                 this.rtToTotal.put(rt,0);
             }
-            for(String role :contactRoles) {
+            for(String role : contactRoles) {
                 this.roleToTotal.put(role,0);
             }
         }        
