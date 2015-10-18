@@ -47,7 +47,7 @@
         DonationHistoryControllerExtension ext = new DonationHistoryControllerExtension(sc);
         Test.stopTest();
 
-        System.assertEquals(200,ext.donationRows.get(2016).TypeTotal);
+        System.assertEquals(200,ext.donationRows.get(2016).TypesTotal);
         System.assertEquals(0,ext.donationRows.get(2016).RoleTotal);
     }
 
@@ -62,6 +62,6 @@
         DonationHistoryControllerExtension ext = new DonationHistoryControllerExtension(sc);
         Test.stopTest();
 
-        System.assertEquals(200,ext.donationRows.get(2015).TypeTotal);
+        System.assertEquals(200,ext.donationRows.get(2015).TypesTotal);
     }
 }

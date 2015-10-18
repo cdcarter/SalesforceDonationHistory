@@ -32,15 +32,15 @@
             <apex:facet name="footer">{!$Label.All_Time_Footer}</apex:facet>
         </apex:column>
 
-        <apex:repeat value="{!recordTypes}" var="rt" rendered="{!NOT(ISBLANK(AllTime))}">
+        <apex:repeat value="{!types}" var="rt" rendered="{!NOT(ISBLANK(AllTime))}">
             <apex:column >
                 <apex:facet name="header">{!rt}</apex:facet>
                 <apex:outputText value="{0, number, currency}">
-                    <apex:param value="{!donationRows[row].rtToTotal[rt]}"/>
+                    <apex:param value="{!donationRows[row].typeToTotal[rt]}"/>
                 </apex:outputText>
                 <apex:facet name="footer">
                     <apex:outputText value="{0, number, currency}">
-                        <apex:param value="{!rtTotals[rt]}"/>
+                        <apex:param value="{!typeTotals[rt]}"/>
                     </apex:outputText>
                 </apex:facet>
             </apex:column>
@@ -49,7 +49,7 @@
         <apex:column rendered="{!NOT(ISBLANK(AllTime))}">
             <apex:facet name="header">{!$Label.Types_Total_Header}</apex:facet>
             <apex:outputText value="{0, number, currency}">
-            	<apex:param value="{!donationRows[row].TypeTotal}"/>
+            	<apex:param value="{!donationRows[row].TypesTotal}"/>
             </apex:outputText>
          	<apex:facet name="footer">
             	<apex:outputText value="{0, number, currency}">

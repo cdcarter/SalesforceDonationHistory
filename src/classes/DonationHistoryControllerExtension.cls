@@ -36,11 +36,11 @@ public with sharing class DonationHistoryControllerExtension {
     // object showing the totals for each recordtype
     public Map<Integer,DonationRow> donationRows {get;set;}
     // the recordtypes that exist for this HH
-    public List<String> recordTypes {get;set;}
+    public List<String> types {get;set;}
     // the contact roles that exist for this HH
     public List<String> contactRoles {get;set;}
     // the summary of each recordtype amount
-    public Map<String,Decimal> rtTotals {get;set;}
+    public Map<String,Decimal> typeTotals {get;set;}
     // the summart of each role amount
     public Map<String,Decimal> roleTotals {get;set;}
     // the all time giving number for this constituent
@@ -52,7 +52,7 @@ public with sharing class DonationHistoryControllerExtension {
     
     public DonationHistoryControllerExtension(ApexPages.StandardController stdController) {
 		this.donationRows = new Map<Integer,DonationRow>();
-        this.rtTotals = new Map<String,Decimal>();
+        this.typeTotals = new Map<String,Decimal>();
         this.roleTotals = new Map<String,Decimal>();
         this.objectId = stdController.getId();
         if(stdController.getRecord().getSObjectType() == Account.sObjectType) {
@@ -99,7 +99,8 @@ public with sharing class DonationHistoryControllerExtension {
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
         // TODO: possibly limit RT summary to just primary contact donations
-        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name rtName, SUM(Amount) TotalAmount '+
+        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name typeName, SUM(Amount) TotalAmount, '+
+                                   'GROUPING(RecordType.Name) grpType ' +
                                    'FROM Opportunity ' +
                                    'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), RecordType.Name) ' +
@@ -141,9 +142,9 @@ public with sharing class DonationHistoryControllerExtension {
                                                      GROUP BY Role];
         
         // create the list of typeNames 
-        this.recordTypes = new List<String>();
+        this.types = new List<String>();
        	for(AggregateResult agg : recordTypesSummary) {
-            recordTypes.add((string)agg.get('name'));
+            types.add((string)agg.get('name'));
         }
         // and create the list of contactRoleNames
         this.contactRoles = new List<String>();
@@ -153,33 +154,33 @@ public with sharing class DonationHistoryControllerExtension {
         
         for(AggregateResult agg : cubedSummary) {
             // a row can contain FY, RTName, Both, or neither
-            if(agg.get('fy')!= null && agg.get('rtName') != null) {
+            if(agg.get('fy')!= null && agg.get('typeName') != null) {
                 // in the case of both, we want to set the RT total for that fiscal year
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
-                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                        new DonationRow(Integer.valueOf(agg.get('fy')),types,contactRoles)
                     );
                 }
                 if(agg.get('TotalAmount') != null) {
-                    donationRows.get(Integer.valueOf(agg.get('fy'))).rtToTotal.put(
-                        (String)agg.get('rtName'),
+                    donationRows.get(Integer.valueOf(agg.get('fy'))).typeToTotal.put(
+                        (String)agg.get('typeName'),
                         (Decimal)agg.get('TotalAmount')
                     );
                 }
-            } else if(agg.get('fy') == null && agg.get('rtName') != null) {
+            } else if(agg.get('fy') == null && agg.get('typeName') != null) {
                 // in the case of just RTName, we want to set the all time RT total
-                rtTotals.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
-            } else if(agg.get('fy') != null && agg.get('rtName') == null) {
+                typeTotals.put((String)agg.get('typeName'),(Decimal)agg.get('TotalAmount'));
+            } else if(agg.get('fy') != null && agg.get('typeName') == null && agg.get('grpType') == 1) {
                 // in the case of just FY, we want to set the fiscal year total
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
-                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                        new DonationRow(Integer.valueOf(agg.get('fy')),types,contactRoles)
                     );
                 }
-				donationRows.get(Integer.valueOf(agg.get('fy'))).TypeTotal = (Decimal)agg.get('TotalAmount');
-            } else if(agg.get('fy') == null && agg.get('rtName') == null) {
+				donationRows.get(Integer.valueOf(agg.get('fy'))).TypesTotal = (Decimal)agg.get('TotalAmount');
+            } else if(agg.get('fy') == null && agg.get('typeName') == null) {
                 // in the case of neither, we set the AllTime total
                 this.AllTime = (Decimal)agg.get('TotalAmount');
             }
@@ -191,7 +192,7 @@ public with sharing class DonationHistoryControllerExtension {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
-                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                        new DonationRow(Integer.valueOf(agg.get('fy')),types,contactRoles)
                     );
                 }
                 if(agg.get('TotalAmount') != null) {
@@ -206,7 +207,7 @@ public with sharing class DonationHistoryControllerExtension {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(
                         Integer.valueOf(agg.get('fy')),
-                        new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles)
+                        new DonationRow(Integer.valueOf(agg.get('fy')),types,contactRoles)
                     );
                 }
 				donationRows.get(Integer.valueOf(agg.get('fy'))).RoleTotal = (Decimal)agg.get('TotalAmount');
@@ -236,7 +237,7 @@ public with sharing class DonationHistoryControllerExtension {
                 for(integer j = 1; j<= yearsToAdd; j++) {
                     //system.debug(String.format('adding {0}',new List<String>{String.valueOf(currentYear-j)}));
                 	this.FiscalYears.add(currentYear-j);
-                    this.donationRows.put(currentYear-j, new DonationRow(currentYear-j,recordTypes,contactRoles));
+                    this.donationRows.put(currentYear-j, new DonationRow(currentYear-j,types,contactRoles));
                 }
             }
             //system.debug(String.format('adding year with donations {0}',new List<String>{String.valueOf(temp[i])}));
@@ -247,14 +248,14 @@ public with sharing class DonationHistoryControllerExtension {
     }
     
     public class DonationRow {
-        public Map<String,Decimal> rtToTotal {get;set;}
+        public Map<String,Decimal> typeToTotal {get;set;}
         public Map<String,Decimal> roleToTotal {get;set;}
         public Integer fiscalYear {get;set;}
         // total for this FY
-        public Decimal TypeTotal {
+        public Decimal TypesTotal {
             get {
-            	if(this.TypeTotal == null){this.TypeTotal = 0;}
-                return this.TypeTotal;
+            	if(this.TypesTotal == null){this.TypesTotal = 0;}
+                return this.TypesTotal;
       		}
             set;
         }
@@ -266,12 +267,12 @@ public with sharing class DonationHistoryControllerExtension {
             }
             set;
         }
-        public DonationRow(Integer fy,List<String> recordTypes, List<String> contactRoles) {
-            this.rtToTotal = new Map<String,Decimal>();
+        public DonationRow(Integer fy,List<String> types, List<String> contactRoles) {
+            this.typeToTotal = new Map<String,Decimal>();
             this.roleToTotal = new Map<String,Decimal>();
             this.fiscalYear = fy;
-            for(String rt : recordTypes) {
-                this.rtToTotal.put(rt,0);
+            for(String t : types) {
+                this.typeToTotal.put(t,0);
             }
             for(String role : contactRoles) {
                 this.roleToTotal.put(role,0);
