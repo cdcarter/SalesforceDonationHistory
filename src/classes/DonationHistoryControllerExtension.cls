@@ -100,14 +100,14 @@ public with sharing class DonationHistoryControllerExtension {
         // TODO: possibly limit RT summary to just primary contact donations
         String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, RecordType.Name rtName, SUM(Amount) TotalAmount '+
                                    'FROM Opportunity ' +
-                                   'WHERE IsWon = True AND Amount != 0 AND AccountId = :accountId ' +
+                                   'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), RecordType.Name) ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
 		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
                                         'SUM(Opportunity.Amount) TotalAmount, Role role ' +
                                         'FROM OpportunityContactRole ' + 
-                                        'WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 '+
+                                        'WHERE Opportunity.IsWon = True AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0) '+
                                         'AND ContactId IN : contactIds '+
                                         'AND Role NOT IN : rolesToExclude '+
                                         'GROUP BY CUBE(FISCAL_YEAR(Opportunity.CloseDate), Role) '+
@@ -123,8 +123,8 @@ public with sharing class DonationHistoryControllerExtension {
         
         // Get all represeted RTs and OCRs.
         // if we allow arbitrary field name to group by, how do we get all the possible values, even ones not in this set?
-        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name FROM Opportunity WHERE IsWon = True AND Amount != 0 AND AccountId = :accountId GROUP BY RecordType.Name];
-       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND Opportunity.Amount != 0 AND ContactId IN: contactIds AND Role NOT IN :rolesToExclude GROUP BY Role];
+        List<AggregateResult> recordTypesSummary = [SELECT Count(Id), RecordType.Name name FROM Opportunity WHERE IsWon = True AND (Amount > 0 OR Amount < 0 ) AND AccountId = :accountId GROUP BY RecordType.Name];
+       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role FROM OpportunityContactRole WHERE Opportunity.IsWon = True AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0)  AND ContactId IN: contactIds AND Role NOT IN :rolesToExclude GROUP BY Role];
         
         // create the list of typeNames 
         this.recordTypes = new List<String>();
@@ -144,7 +144,9 @@ public with sharing class DonationHistoryControllerExtension {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
                 }
-                donationRows.get(Integer.valueOf(agg.get('fy'))).rtToTotal.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
+                if(agg.get('TotalAmount') != null) {
+                    donationRows.get(Integer.valueOf(agg.get('fy'))).rtToTotal.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
+                }
             } else if(agg.get('fy') == null && agg.get('rtName') != null) {
                 // in the case of just RTName, we want to set the all time RT total
                 rtTotals.put((String)agg.get('rtName'),(Decimal)agg.get('TotalAmount'));
@@ -166,7 +168,9 @@ public with sharing class DonationHistoryControllerExtension {
                 if(!donationRows.containsKey(Integer.valueOf(agg.get('fy')))) {
                     donationRows.put(Integer.valueOf(agg.get('fy')),new DonationRow(Integer.valueOf(agg.get('fy')),recordTypes,contactRoles));
                 }
-                donationRows.get(Integer.valueOf(agg.get('fy'))).roleToTotal.put((String)agg.get('role'),(Decimal)agg.get('TotalAmount'));
+                if(agg.get('TotalAmount') != null) {
+                    donationRows.get(Integer.valueOf(agg.get('fy'))).roleToTotal.put((String)agg.get('role'),(Decimal)agg.get('TotalAmount'));
+                }
             } else if(agg.get('fy') == null && agg.get('role') != null) {
                 roleTotals.put((String)agg.get('role'),(Decimal)agg.get('TotalAmount'));
             } else if(agg.get('fy') != null && agg.get('role') == null) {
@@ -202,6 +206,8 @@ public with sharing class DonationHistoryControllerExtension {
             //system.debug(String.format('adding year with donations {0}',new List<String>{String.valueOf(temp[i])}));
             this.FiscalYears.add(temp[i]);
         }
+
+        System.debug(this.donationRows);
     }
     
     public class DonationRow {
