@@ -5,10 +5,10 @@ This package includes pagelets to display donation history on the standard Accou
 This package is "base package agnostic" and should be suitable for any NPO using Opportunity to track donations. It has been tested with NPSP 3.0 and PatronTechnology's PatronManager.
 
 It looks great in Aloha:
-!(http://cdcarter.github.io/SalesforceDonationHistory/aloha-demo.png)[Aloha]
+![Aloha Preview](http://cdcarter.github.io/SalesforceDonationHistory/aloha-demo.png)
 
 and in the Lightning Experience!
-!(http://cdcarter.github.io/SalesforceDonationHistory/lex-demo.png)[Lightning Experience]
+![Lightning Experience Preview](http://cdcarter.github.io/SalesforceDonationHistory/lex-demo.png)
 
 The package was initially commissioned by Caroline Renard, after seeing the  giving totals pagelet from Groundwire Base.
 
