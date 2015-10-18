@@ -13,5 +13,6 @@ The package was initially commissioned by Caroline Renard, after seeing the
 giving totals pagelet from Groundwire Base.
 
 Copyright (c)2015 Christian Carter (@cdcarter)
+
 Inspired by Contact Giving Totals, Evan Callahan, copyright (c) 2010 Groundwire
 http://github.com/Groundwire/GWBase/blob/master/src/pages/ContactTotalsByRT.page
