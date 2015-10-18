@@ -91,5 +91,18 @@
         <h2>This household has no gifts to display.</h2>
     </apex:outputPanel>
 
+    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" html-role="alert" rendered="{!AND(ISBLANK(RolesAllTime),FiscalYears.size != 0)}">
+        <span class="slds-assistive-text">Info</span>
+
+        <h2>This household has no soft credits to display.</h2>
+    </apex:outputPanel>
+
+    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" html-role="alert" rendered="{!AND(ISBLANK(AllTime),FiscalYears.size != 0)}">
+        <span class="slds-assistive-text">Info</span>
+
+        <h2>This household has no direct donations to display.</h2>
+    </apex:outputPanel>
+
+
     </div>
 </apex:page>
