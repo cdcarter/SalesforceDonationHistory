@@ -24,8 +24,10 @@ There is a custom setting named "Donation History Pagelet Settings" that allows 
 <tr><th>Field</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>Account Roles to Exclude</td><td>Donor;Household Member</td><td>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Account donation history pagelet. Most users exclude "Donor" and "Household Member" so as to only see soft credits, but there are reasons you may want to exclude others or include those.</td></tr>
-<tr><td>Contact Roles to Exclude</td><td>Donor;Household Member</td><td>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Contact donation history pagelet. Most users exclude "Donor" and "Household Member" so as to only see soft credits, but there are reasons you may want to exclude others or include those.</td></tr>
+<tr><td>Roles to Exclude Acc</td><td>Donor;Household Member</td><td>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Account donation history pagelet. Most users exclude "Donor" and "Household Member" so as to only see soft credits, but there are reasons you may want to exclude others or include those.</td></tr>
+<tr><td>Roles to Exclude Con</td><td>Donor;Household Member</td><td>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Contact donation history pagelet. Most users exclude "Donor" and "Household Member" so as to only see soft credits, but there are reasons you may want to exclude others or include those.</td></tr>
+<tr><td>Opp Types to Exclude Acc</td><td></td><td>A semicolon separated list of the opportunity types to exclude for the Account pagelet. These should be possible values of whatever your Opportunity Type Field is.</td></tr>
+<tr><td>Opp Types to Exclude Con</td><td></td><td>A semicolon separated list of the opportunity types to exclude for the Contact pagelet. These should be possible values of whatever your Opportunity Type Field is.</td></tr>
 <tr><td>Opportunity Type Field</td><td>RecordType.Name</td><td>This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices.</td></tr>
 <tr><td>Use Calendar Year?</td><td>False</td><td>When checked, the summaries on the pagelet will be by Calendar Year, even if your organization has a fiscal year configured. This is useful if you want to think of donors in terms of their annual giving.</td></tr>
 </tbody>

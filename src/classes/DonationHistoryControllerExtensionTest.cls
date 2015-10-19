@@ -63,7 +63,7 @@
     @isTest public static void test_withCustomSetting() {
         Donation_History_Settings__c setting = new Donation_History_Settings__c(
             IsCalendarYear__c = true,
-            Contact_Roles_to_Exclude__c = 'Donor;Household Member'
+            Roles_to_Exclude_Con__c = 'Donor;Household Member'
         );
         insert setting;
 

@@ -66,6 +66,7 @@ public with sharing class DonationHistoryControllerExtension {
         // set up the settings
         Boolean isCalendarYear = false;
         List<String> rolesToExclude = new List<String>{'Donor'};
+        List<String> typesToExclude = new List<String>();
         String typeField = 'RecordType.Name';
         Donation_History_Settings__c settings = Donation_History_Settings__c.getInstance();
         if(settings != null) {
@@ -76,12 +77,18 @@ public with sharing class DonationHistoryControllerExtension {
                 typeField = settings.Opportunity_Type_Field__c;
             }
             if(contactSummary) {
-                if(settings.Contact_Roles_to_Exclude__c != null) {
-                    rolesToExclude = settings.Contact_Roles_to_Exclude__c.split(';');
+                if(settings.Roles_to_Exclude_Con__c != null) {
+                    rolesToExclude = settings.Roles_to_Exclude_Con__c.split(';');
+                }
+                if(settings.Opp_Types_to_Exclude_Con__c != null) {
+                    typesToExclude = settings.Opp_Types_to_Exclude_Con__c.split(';');
                 }
             } else {
-                if(settings.Account_Roles_to_Exclude__c != null) {
-                    rolesToExclude = settings.Account_Roles_to_Exclude__c.split(';');
+                if(settings.Roles_to_Exclude_Acc__c != null) {
+                    rolesToExclude = settings.Roles_to_Exclude_Acc__c.split(';');
+                }
+                if(settings.Opp_Types_to_Exclude_Acc__c != null) {
+                    typesToExclude = settings.Opp_Types_to_Exclude_Acc__c.split(';');
                 }
             }
         }
@@ -96,10 +103,6 @@ public with sharing class DonationHistoryControllerExtension {
             } 
         }
 
-        
-        // TODO: custom setting for name of field to group by (dynamic apex)
-        // TODO: custom setting for record types to withhold
-
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
         // TODO: possibly limit RT summary to just primary contact donations
@@ -107,6 +110,7 @@ public with sharing class DonationHistoryControllerExtension {
                                    'GROUPING('+typeField+') grpType ' +
                                    'FROM Opportunity ' +
                                    'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
+                                   'AND '+typeField+' NOT IN : typesToExclude '+
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), '+typeField+') ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
@@ -131,13 +135,14 @@ public with sharing class DonationHistoryControllerExtension {
         // Get all represeted RTs and OCRs.
         // if we allow arbitrary field name to group by, how do we get all the possible values
         // even ones not in this set?
-        String recordTypesSummaryQuery = 'SELECT Count(Id), '+typeField+' name ' +
+        String typesSummaryQuery = 'SELECT Count(Id), '+typeField+' name ' +
                                          'FROM Opportunity '+
                                          'WHERE IsWon = True  AND (Amount > 0 OR Amount < 0 ) '+
                                          'AND AccountId = :accountId '+
+                                         'AND '+typeField+' NOT IN : typesToExclude ' +
                                          'GROUP BY '+typeField;
 
-        List<AggregateResult> recordTypesSummary = Database.query(recordTypesSummaryQuery);
+        List<AggregateResult> typesSummary = Database.query(typesSummaryQuery);
        	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role 
                                                      FROM OpportunityContactRole 
                                                      WHERE Opportunity.IsWon = True 
@@ -148,7 +153,7 @@ public with sharing class DonationHistoryControllerExtension {
         
         // create the list of typeNames 
         this.types = new List<String>();
-       	for(AggregateResult agg : recordTypesSummary) {
+       	for(AggregateResult agg : typesSummary) {
             types.add((string)agg.get('name'));
         }
         // and create the list of contactRoleNames
