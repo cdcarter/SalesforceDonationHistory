@@ -17,17 +17,17 @@
 
 
         List<Opportunity> oppsToInsert = new List<Opportunity>();
-        oppsToInsert.add(new Opportunity(Name='0', StageName='Posted',Amount=100,CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId, Type='Individual'));
-        oppsToInsert.add(new Opportunity(Name='1', StageName='Posted',Amount=100,CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId2, Type='Individual'));
-        oppsToInsert.add(new Opportunity(Name='2', StageName='Posted',Amount=200,CloseDate = Date.newInstance(2013,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId));
+        oppsToInsert.add(new Opportunity(Name='0', StageName='Closed Won',Amount=100,CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId, Type='Individual'));
+        oppsToInsert.add(new Opportunity(Name='1', StageName='Closed Won',Amount=100,CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId2, Type='Individual'));
+        oppsToInsert.add(new Opportunity(Name='2', StageName='Closed Won',Amount=200,CloseDate = Date.newInstance(2013,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId));
         // next one is special, is for acc2 but will have ocr to acc1
-        oppsToInsert.add(new Opportunity(Name='3', StageName='Posted',Amount=200,CloseDate = Date.newInstance(2013,orgFiscalMonth,01), AccountId = acc2.Id, RecordTypeId=rtId));
+        oppsToInsert.add(new Opportunity(Name='3', StageName='Closed Won',Amount=200,CloseDate = Date.newInstance(2013,orgFiscalMonth,01), AccountId = acc2.Id, RecordTypeId=rtId));
         // include opp with no amount
-        oppsToInsert.add(new Opportunity(Name='4', StageName='Posted',CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId2));
+        oppsToInsert.add(new Opportunity(Name='4', StageName='Closed Won',CloseDate = Date.newInstance(2015,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId2));
         // also special, ocr to our contact and in a FY they dont have a hard credit
-        oppsToInsert.add(new Opportunity(Name='5', StageName='Posted',Amount=200,CloseDate = Date.newInstance(2001,orgFiscalMonth,01), AccountId = acc2.Id, RecordTypeId=rtId));
+        oppsToInsert.add(new Opportunity(Name='5', StageName='Closed Won',Amount=200,CloseDate = Date.newInstance(2001,orgFiscalMonth,01), AccountId = acc2.Id, RecordTypeId=rtId));
         // need more than one without a type to make sure we don't duplicate add '--'
-        oppsToInsert.add(new Opportunity(Name='6', StageName='Posted',Amount=200,CloseDate = Date.newInstance(2002,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId));
+        oppsToInsert.add(new Opportunity(Name='6', StageName='Closed Won',Amount=200,CloseDate = Date.newInstance(2002,orgFiscalMonth,01), AccountId = acc.Id, RecordTypeId=rtId));
 
 
         insert oppsToInsert;

@@ -1,4 +1,4 @@
-<apex:page standardController="Account" extensions="DonationHistoryControllerExtension" standardStylesheets="false" showHeader="false" sidebar="false">
+<apex:page standardController="Account" standardStylesheets="false" showHeader="false" sidebar="false">
 <!-- 
     Donation History Pagelet
 	This pagelet uses the Account standard controller to display donation
@@ -20,83 +20,5 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
-    <style>
-        .bold {font-weight: bold;}
-    </style>
-    <div class="slds">
-    <apex:dataTable value="{!FiscalYears}" var="row" rendered="{!FiscalYears.size != 0}" styleClass="slds-table slds-table--bordered slds-table--striped slds-no-row-hover slds-scrollable--y" headerclass="slds-text-heading--label" rowClasses="slds-text-body--small" footerclass="bold">
-        <apex:column >
-            <apex:facet name="header">{!$Label.Year_Header}</apex:facet>
-            <apex:outputText value="{!donationRows[row].fiscalYear}"/>
-            <apex:facet name="footer">{!$Label.All_Time_Footer}</apex:facet>
-        </apex:column>
-
-        <apex:repeat value="{!types}" var="rt" rendered="{!NOT(ISBLANK(AllTime))}">
-            <apex:column >
-                <apex:facet name="header">{!rt}</apex:facet>
-                <apex:outputText value="{0, number, currency}">
-                    <apex:param value="{!donationRows[row].typeToTotal[rt]}"/>
-                </apex:outputText>
-                <apex:facet name="footer">
-                    <apex:outputText value="{0, number, currency}">
-                        <apex:param value="{!typeTotals[rt]}"/>
-                    </apex:outputText>
-                </apex:facet>
-            </apex:column>
-        </apex:repeat>
-        
-        <apex:column rendered="{!NOT(ISBLANK(AllTime))}">
-            <apex:facet name="header">{!$Label.Types_Total_Header}</apex:facet>
-            <apex:outputText value="{0, number, currency}">
-            	<apex:param value="{!donationRows[row].TypesTotal}"/>
-            </apex:outputText>
-         	<apex:facet name="footer">
-            	<apex:outputText value="{0, number, currency}">
-                	<apex:param value="{!AllTime}"/>
-                </apex:outputText>
-            </apex:facet>
-        </apex:column>
-        
-        <apex:repeat value="{!contactRoles}" var="role" rendered="{!NOT(ISBLANK(RolesAllTime))}">
-            <apex:column >
-                <apex:facet name="header">{!role}</apex:facet>
-                <apex:outputText value="{0, number, currency}">
-                    <apex:param value="{!donationRows[row].roleToTotal[role]}"/>
-                </apex:outputText>
-                <apex:facet name="footer">
-                    <apex:outputText value="{0, number, currency}">
-                        <apex:param value="{!roleTotals[role]}"/>
-                    </apex:outputText>
-                </apex:facet>
-            </apex:column>
-        </apex:repeat> 
-        
-        <apex:column rendered="{!NOT(ISBLANK(RolesAllTime))}">
-            <apex:facet name="header">{!$Label.Contact_Role_Footer}</apex:facet>
-            <apex:outputText value="{0, number, currency}">
-            	<apex:param value="{!donationRows[row].RoleTotal}"/>
-            </apex:outputText>
-         	<apex:facet name="footer">
-            	<apex:outputText value="{0, number, currency}">
-                	<apex:param value="{!RolesAllTime}"/>
-                </apex:outputText>
-            </apex:facet>
-        </apex:column>
-    </apex:dataTable>
-
-    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" html-role="alert" rendered="{!FiscalYears.size == 0}">
-        <h2>{!$Label.Alert_No_Data}</h2>
-    </apex:outputPanel>
-
-    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" html-role="alert" rendered="{!AND(ISBLANK(RolesAllTime),FiscalYears.size != 0)}">
-        <h2>{!$Label.Alert_Account_No_Soft_Credit}</h2>
-    </apex:outputPanel>
-
-    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-texture" html-role="alert" rendered="{!AND(ISBLANK(AllTime),FiscalYears.size != 0)}">
-        <h2>{!$Label.Alert_Account_No_Hard_Credits}</h2>
-    </apex:outputPanel>
-
-
-    </div>
+    <c:DonationHistoryGrid ConstituentId="{!Account.Id}" />  
 </apex:page>

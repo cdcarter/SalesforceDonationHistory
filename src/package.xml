@@ -3,9 +3,11 @@
 	<types>
 		<members>DonationHistoryControllerExtension</members>
 		<members>DonationHistoryControllerExtensionTest</members>
+		<members>DonationHistoryGridController</members>
 		<name>ApexClass</name>
 	</types>
 	<types>
+		<members>AccountDonationGrid</members>
 		<members>AccountDonationHistory</members>
 		<members>ContactDonationHistory</members>
 		<name>ApexPage</name>

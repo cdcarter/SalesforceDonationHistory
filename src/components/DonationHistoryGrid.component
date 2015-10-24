@@ -1,0 +1,88 @@
+<apex:component controller="DonationHistoryGridController" access="global">
+	<apex:attribute name="ConstituentId" description="The account or contact Id" type="Id" required="true" assignTo="{!objectId}" access="global"/>
+	<apex:attribute name="UseCalendarYear" description="This checkbox indicates to the component that even if a fiscal year is set, the summary should be by calendar year." type="Boolean" required="false" assignTo="{!IsCalendarYear}" default="false" access="global"/>
+	<apex:attribute name="HardCreditField" description="This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices." type="String" required="false" assignTo="{!Opportunity_Type_Field}" default="Type" access="global"/>
+	<apex:attribute name="TypesToExclude" description=" semicolon separated list of the opportunity types to exclude for the  pagelet. These should be possible values of whatever your Opportunity Type Field is." type="String" required="false" assignTo="{!Opp_Types_to_Exclude}" default="" access="global"/>
+	<apex:attribute name="RolesToExclude" description="A semicolon separated list of the Opportunity Contact Roles to not summarize on the  donation history pagelet." type="String" required="false" assignTo="{!Roles_To_Exclude}" default="Donor;Household Member" access="global"/>
+
+	<apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
+	
+	{!DoEverything}
+
+	<style>
+	    .bold {font-weight: bold;}
+	</style>
+	<div class="slds">
+	    <apex:dataTable value="{!FiscalYears}" var="row" rendered="{!FiscalYears.size != 0}" styleClass="slds-table slds-table--	bordered slds-table--striped slds-no-row-hover slds-scrollable--y" headerclass="slds-text-heading--label" rowClasses="slds-	text-body--small" footerclass="bold">
+	        <apex:column >
+	            <apex:facet name="header">{!$Label.Year_Header}</apex:facet>
+	            <apex:outputText value="{!donationRows[row].fiscalYear}"/>
+	            <apex:facet name="footer">{!$Label.All_Time_Footer}</apex:facet>
+	        </apex:column>
+	
+	        <apex:repeat value="{!types}" var="rt" rendered="{!NOT(ISBLANK(AllTime))}">
+	            <apex:column >
+	                <apex:facet name="header">{!rt}</apex:facet>
+	                <apex:outputText value="{0, number, currency}">
+	                    <apex:param value="{!donationRows[row].typeToTotal[rt]}"/>
+	                </apex:outputText>
+	                <apex:facet name="footer">
+	                    <apex:outputText value="{0, number, currency}">
+	                        <apex:param value="{!typeTotals[rt]}"/>
+	                    </apex:outputText>
+	                </apex:facet>
+	            </apex:column>
+	        </apex:repeat>
+	        
+	        <apex:column rendered="{!NOT(ISBLANK(AllTime))}">
+	            <apex:facet name="header">{!$Label.Types_Total_Header}</apex:facet>
+	            <apex:outputText value="{0, number, currency}">
+	            	<apex:param value="{!donationRows[row].TypesTotal}"/>
+	            </apex:outputText>
+	         	<apex:facet name="footer">
+	            	<apex:outputText value="{0, number, currency}">
+	                	<apex:param value="{!AllTime}"/>
+	                </apex:outputText>
+	            </apex:facet>
+	        </apex:column>
+	        
+	        <apex:repeat value="{!contactRoles}" var="role" rendered="{!NOT(ISBLANK(RolesAllTime))}">
+	            <apex:column >
+	                <apex:facet name="header">{!role}</apex:facet>
+	                <apex:outputText value="{0, number, currency}">
+	                    <apex:param value="{!donationRows[row].roleToTotal[role]}"/>
+	                </apex:outputText>
+	                <apex:facet name="footer">
+	                    <apex:outputText value="{0, number, currency}">
+	                        <apex:param value="{!roleTotals[role]}"/>
+	                    </apex:outputText>
+	                </apex:facet>
+	            </apex:column>
+	        </apex:repeat> 
+	        
+	        <apex:column rendered="{!NOT(ISBLANK(RolesAllTime))}">
+	            <apex:facet name="header">{!$Label.Contact_Role_Footer}</apex:facet>
+	            <apex:outputText value="{0, number, currency}">
+	            	<apex:param value="{!donationRows[row].RoleTotal}"/>
+	            </apex:outputText>
+	         	<apex:facet name="footer">
+	            	<apex:outputText value="{0, number, currency}">
+	                	<apex:param value="{!RolesAllTime}"/>
+	                </apex:outputText>
+	            </apex:facet>
+	        </apex:column>
+	    </apex:dataTable>
+	
+	    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-	texture" html-role="alert" rendered="{!FiscalYears.size == 0}">
+	        <h2>{!$Label.Alert_No_Data}</h2>
+	    </apex:outputPanel>
+	
+	    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-	texture" html-role="alert" rendered="{!AND(ISBLANK(RolesAllTime),FiscalYears.size != 0)}">
+	        <h2>{!$Label.Alert_Account_No_Soft_Credit}</h2>
+	    </apex:outputPanel>
+	
+	    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-	texture" html-role="alert" rendered="{!AND(ISBLANK(AllTime),FiscalYears.size != 0)}">
+	        <h2>{!$Label.Alert_Account_No_Hard_Credits}</h2>
+	    </apex:outputPanel>
+	</div>
+</apex:component>
