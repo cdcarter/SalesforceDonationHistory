@@ -2,7 +2,7 @@
 	<apex:attribute name="ConstituentId" description="The account or contact Id" type="Id" required="true" assignTo="{!objectId}" access="global"/>
 	<apex:attribute name="UseCalendarYear" description="This checkbox indicates to the component that even if a fiscal year is set, the summary should be by calendar year." type="Boolean" required="false" assignTo="{!IsCalendarYear}" default="false" access="global"/>
 	<apex:attribute name="HardCreditField" description="This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices." type="String" required="false" assignTo="{!Opportunity_Type_Field}" default="Type" access="global"/>
-	<apex:attribute name="TypesToExclude" description=" semicolon separated list of the opportunity types to exclude for the  pagelet. These should be possible values of whatever your Opportunity Type Field is." type="String" required="false" assignTo="{!Opp_Types_to_Exclude}" default="" access="global"/>
+	<apex:attribute name="TypesToExclude" description=" semicolon separated list of the opportunity types to exclude for the  pagelet. These should be possible values of whatever your Opportunity Type Field is." type="String" required="false" assignTo="{!Opp_Types_to_Exclude}" access="global"/>
 	<apex:attribute name="RolesToExclude" description="A semicolon separated list of the Opportunity Contact Roles to not summarize on the  donation history pagelet." type="String" required="false" assignTo="{!Roles_To_Exclude}" default="Donor;Household Member" access="global"/>
 
 	<apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />

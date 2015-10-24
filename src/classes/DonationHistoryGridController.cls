@@ -58,7 +58,7 @@ public with sharing class DonationHistoryGridController {
 
     public DonationHistoryGridController() {
         this.IsCalendarYear = false;
-        this.Opp_Types_to_Exclude = '';
+        this.Opp_Types_to_Exclude = null;
         this.Opportunity_Type_Field = 'RecordType.Name';
         this.Roles_to_Exclude = 'Donor;Household Member';
 
@@ -85,8 +85,11 @@ public with sharing class DonationHistoryGridController {
                 contactIds.add(c.Id);
             } 
         }
-
-        List<String> types_to_exclude = Opp_Types_to_Exclude.split(';');
+        List<String> types_to_exclude = new List<String>();
+        if(Opp_Types_to_Exclude!= null) {
+            types_to_exclude = Opp_Types_to_Exclude.split(';');
+        }
+        
         List<String> list_roles_to_exclude = Roles_to_Exclude.split(';');
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
@@ -176,6 +179,7 @@ public with sharing class DonationHistoryGridController {
             } else if(agg.get('fy') == null && agg.get('grpType') == 0) {
                 // in the case of just RTName, we want to set the all time RT total
                 String typeName;
+                system.debug((String)agg.get('typeName'));
                 if( (String)agg.get('typeName')!=null ) {
                     typeName = (String)agg.get('typeName');
                 } else {
