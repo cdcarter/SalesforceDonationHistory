@@ -11,6 +11,8 @@ and in the Lightning Experience!
 ![Lightning Experience Preview](http://cdcarter.github.io/SalesforceDonationHistory/lex-demo.png)
 
 ## Getting Started
+A beta release of the package (only installable in Dev Orgs and Sandbox) [is now available](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t61000000FZAk). Access to the production package is currently only available to users who test the beta package first. If you have successfully installed the beta and tested it in your sandbox, please reach out to Christian Carter (cdcarter at gmail dot com) with subject line "Donation History Package".
+
 To use this package, simply add the `AccountDonationHistory` or `ContactDonationHistory` pagelets to your respective page layouts. After you've added the VF page to the layout, hover over it and click the "wrench" icon to bring up the configuration for the pagelet itself. Leave the width at 100%, and make sure to check "Show scrollbars".
 
 Visualforce pages in page layouts have a fixed height. The default height of 200px will show 6 rows of the table. Depending on how many years your average donor has been with your organization, you may want to increase or decrease the size of the box. By checking "show scrollbars", you'll be able to scroll within the IFrame, but if you consistently have donors with over 4 years of donation history, you might consider a larger height.
