@@ -36,14 +36,13 @@
         insert new OpportunityContactRole(OpportunityId=oppsToInsert[5].Id,ContactId=con.Id,Role='Influencer');
     }
     @isTest public static void test_accountController(){
-        Donation_History_Settings__c setting = new Donation_History_Settings__c();
-        insert setting;
-
         Account acc = [SELECT Id FROM Account LIMIT 1][0];
-        ApexPages.StandardController sc = new ApexPages.StandardController(acc);
 
         Test.startTest();
-        DonationHistoryControllerExtension ext = new DonationHistoryControllerExtension(sc);
+        DonationHistoryGridController ext = new DonationHistoryGridController();
+        ext.objectId = acc.id;
+        ext.getDoEverything();
+
         Test.stopTest();
         
         System.assertEquals(600, ext.AllTime);
@@ -51,41 +50,25 @@
 
     @isTest public static void test_contactController() {
         Contact con = [SELECT Id,AccountId FROM Contact LIMIT 1][0];
-        ApexPages.StandardController sc = new ApexPages.StandardController(con);
         Test.startTest();
-        DonationHistoryControllerExtension ext = new DonationHistoryControllerExtension(sc);
+        DonationHistoryGridController ext = new DonationHistoryGridController();
+        ext.objectId = con.id;
+        ext.getDoEverything();
         Test.stopTest();
 
         System.assertEquals(200,ext.donationRows.get(2016).TypesTotal);
         System.assertEquals(0,ext.donationRows.get(2016).RoleTotal);
     }
 
-    @isTest public static void test_withCustomSetting() {
-        Donation_History_Settings__c setting = new Donation_History_Settings__c(
-            IsCalendarYear__c = true,
-            Roles_to_Exclude_Con__c = 'Donor;Household Member'
-        );
-        insert setting;
-
-        Contact con = [SELECT Id,AccountId FROM Contact LIMIT 1][0];
-        ApexPages.StandardController sc = new ApexPages.StandardController(con);
-
-        Test.startTest();
-        DonationHistoryControllerExtension ext = new DonationHistoryControllerExtension(sc);
-        Test.stopTest();
-
-        System.assertEquals(200,ext.donationRows.get(2015).TypesTotal);
-    }
 
     @isTest public static void test_withTypeField() {
-        Donation_History_Settings__c setting = new Donation_History_Settings__c(Opportunity_Type_Field__c='Type');
-        insert setting;
-
         Account acc = [SELECT Id FROM Account LIMIT 1][0];
-        ApexPages.StandardController sc = new ApexPages.StandardController(acc);
 
         Test.startTest();
-        DonationHistoryControllerExtension ext = new DonationHistoryControllerExtension(sc);
+        DonationHistoryGridController ext = new DonationHistoryGridController();
+        ext.objectId = acc.id;
+        ext.Opportunity_Type_Field = 'Type';
+        ext.getDoEverything();
         Test.stopTest();
         
         System.assertEquals(200, ext.typeTotals.get('Individual'));

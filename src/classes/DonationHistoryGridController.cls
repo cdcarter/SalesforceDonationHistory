@@ -57,6 +57,10 @@ public with sharing class DonationHistoryGridController {
     public String Roles_to_Exclude {get;set;}
 
     public DonationHistoryGridController() {
+        this.IsCalendarYear = false;
+        this.Opp_Types_to_Exclude = '';
+        this.Opportunity_Type_Field = 'RecordType.Name';
+        this.Roles_to_Exclude = 'Donor;Household Member';
 
     }
     // this is a horrific hacky way to solve the problem.
@@ -64,10 +68,7 @@ public with sharing class DonationHistoryGridController {
 		this.donationRows = new Map<Integer,DonationRow>();
         this.typeTotals = new Map<String,Decimal>();
         this.roleTotals = new Map<String,Decimal>();
-        system.debug('in the controller');
-        system.debug(objectId);
         if(objectId.getSObjectType() == Account.sObjectType) {
-        	system.debug('this is an account');
             this.accountId = this.objectId;
             this.contactSummary = false;
         } else if(objectId.getSObjectType() == Contact.sObjectType) {
