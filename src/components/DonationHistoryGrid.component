@@ -1,4 +1,4 @@
-<apex:component controller="DonationHistoryGridController" access="global">
+<apex:component controller="DonationHistoryGridController" access="global" layout="block" selfClosing="true" allowDML="false">
 	<apex:attribute name="ConstituentId" description="The account or contact Id" type="Id" required="true" assignTo="{!objectId}" access="global"/>
 	<apex:attribute name="UseCalendarYear" description="This checkbox indicates to the component that even if a fiscal year is set, the summary should be by calendar year." type="Boolean" required="false" assignTo="{!IsCalendarYear}" default="false" access="global"/>
 	<apex:attribute name="HardCreditField" description="This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices." type="String" required="false" assignTo="{!Opportunity_Type_Field}" default="Type" access="global"/>
