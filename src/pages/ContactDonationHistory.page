@@ -20,5 +20,5 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-    <c:DonationHistoryGrid ConstituentId="{!Contact.Id}" UseCalendarYear="{!$Setup.Donation_History_Settings__C.IsCalendarYear__c}" HardCreditField="{!$Setup.Donation_History_Settings__c.Opportunity_Type_Field__c}" TypesToExclude="{!$Setup.Donation_History_Settings__c.Opp_Types_to_Exclude_Con__c}" RolesToExclude="{!$Setup.Donation_History_Settings__c.Roles_to_Exclude_Con__c}"/>  
+    <c:DonationHistoryGrid ConstituentId="{!Contact.Id}" UseCalendarYear="{!$Setup.Donation_History_Settings__C.IsCalendarYear__c}" HardCreditField="{!$Setup.Donation_History_Settings__c.Opportunity_Type_Field__c}" TypesToExclude="{!$Setup.Donation_History_Settings__c.Opp_Types_to_Exclude_Con__c}" RolesToExclude="{!$Setup.Donation_History_Settings__c.Roles_to_Exclude_Con__c}" RecordCounts="{!$Setup.Donation_History_Settings__c.Record_Counts_Instead_of_Sums__c}"/>  
 </apex:page>

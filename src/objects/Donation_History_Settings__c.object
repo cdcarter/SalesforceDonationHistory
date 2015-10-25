@@ -51,6 +51,16 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Record_Counts_Instead_of_Sums__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Use this parameter to show the number of donations in each type/role per year instead of the amount donated.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Use this parameter to show the number of donations in each type/role per year instead of the amount donated.</inlineHelpText>
+        <label>Record Counts Instead of Sums</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Roles_to_Exclude_Acc__c</fullName>
         <defaultValue>&quot;Donor;Household Member&quot;</defaultValue>
         <description>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Account donation history pagelet. Most users exclude &quot;Donor&quot; and &quot;Household Member&quot; so as to only see soft credits, but there are reasons you may want to exclude others or include those.</description>
