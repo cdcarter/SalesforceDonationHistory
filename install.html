@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+  <title>Installing the Donation History Page Layout Component</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="generator" content="Clarify http://www.clarify-it.com">
+  <meta content="" name="description">
+  <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=2.0" />
+  
+  <link href="css/basic.css" media="screen" rel="stylesheet" type="text/css" /><!-- main CSS for structure and style-->
+  <link href="css/prettyPhoto.css" media="screen" rel="stylesheet" type="text/css" charset="utf-8" />
+  <script src="js/jquery-1.6.1.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="js/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+      $("a[rel^='prettyPhoto']").prettyPhoto({
+      	theme: 'pp_default',
+        show_title: false,
+        social_tools:false
+      }); 
+    }); 	
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+  	<div id="header-row">
+  		<div id="header-left">
+  		  <div id="header-left-content">
+          <div class="align-bottom">
+            <h1 class="clarify-article-title">Installing the Donation History Page Layout Component</h1>
+          </div>
+        </div>
+  		</div>
+  		<div id="header-right">
+  			<span class="align-image-bottom"></span>
+		  	  		</div>
+  	</div>
+    <div id="clarify-article-content">
+            <div class="clarify-article-description">
+        <p><span style="color: rgb(38,38,38)">This package includes pagelets to display donation history on the standard Account and Contact page layouts. Donation history is summarized by year, record type, and opportunity contact roles. There is a custom setting to help configure the pagelets and what donations are relevant to them.</span></p>
+<p><span style="color: rgb(38,38,38)">You can find out more about the development of the package at </span><a href="https://github.com/cdcarter/SalesforceDonationHistory">https://github.com/cdcarter/SalesforceDonationHistory.</a></p>
+      </div>		<div class="rule">
+			<img src="images/ui/rule.png" alt="" /> 
+		</div>      <div class="clarify-steps-container">					<div id="clarify-step-1" class="clarify-step-container">						<h2 class="clarify-step-title">Install the Package for All Users</h2>						<div class="clarify-step-instructions"><p>Use the managed package install link (<span style="color: rgb(14,14,14)"><a href="https://login.salesforce.com/packaging/installPackage.apexp?p0=04t610000003EWZ">https://login.salesforce.com/packaging/installPackage.apexp?p0=04t610000003EWZ)</a></span><span style="color: rgb(14,14,14)"> to start the install process. Choose to install for all users, and then wait!</span></p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/install-the-package-for-all-users.png" width="1276" height="601" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					<div class="clarify-sub-steps-container">
+					<div id="clarify-step-2" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Success</h3>						<div class="clarify-step-instructions"><p>In a few moments, the package will be installed and you'll be on your way.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/success.png" width="1000" height="418" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					</div>
+					</div>					<div class="clarify-clear"></div>		<div class="rule">
+			<img src="images/ui/rule.png" alt="" /> 
+		</div>					<div id="clarify-step-3" class="clarify-step-container">						<h2 class="clarify-step-title">Set some settings!</h2>						<div class="clarify-step-instructions"><p>Once you've installed the package, the first thing you need to do is set some custom settings. Navigate to the setup tab and search for &quot;custom settings&quot;.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/set-some-settings-.png" width="226" height="246" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					<div class="clarify-sub-steps-container">
+					<div id="clarify-step-4" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Manage the right setting</h3>						<div class="clarify-step-instructions"><p>Click the &quot;Manage&quot; link next to <em>Donation History Pagelet Settings</em></p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/manage-the-right-setting.png" width="985" height="590" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-5" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Create an Organizational Level Value</h3>						<div class="clarify-step-instructions"><p>The easiest way to get started is to to create an organizational level setting. Later, you can choose to put settings at the profile or user level, but let's just get it up and running.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/create-an-organizational-level-value.png" width="1003" height="397" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-6" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Set your settings</h3>						<div class="clarify-step-instructions"><p>On this page, you have a lot of options for how the default components will operate. </p>
+<ol><li>Use Calendar Year? is an option that will show the donations by Calendar Year instead of by Fiscal Year.</li>
+<li>Opp Types To Exclude Acc - a semicolon seperated list of Type values you don't want to see on your Account page</li>
+<li>Opp Types To Exclude Con - rinse and repeat, for the Contact page.</li>
+<li>Opportunity Type Field - this is the field that hard credits will be summarized by. You may want to use <span style="color: rgb(187,0,0)"><code>RecordType.Name</code></span>, <span style="color: rgb(187,0,0)"><code>Type</code></span>, or a custom field like <span style="color: rgb(187,0,0)"><code>PatronDonate__Fund__c.</code></span> </li>
+<li>Roles to Exclude Acc - These are the soft credit roles to exclude from summary on the Account Page.</li>
+<li>Roles to Exclude Con - These are the soft credit roles to exclude from summary on the Contact Page. I recommend <strong>not</strong> excluding Household Member on the Contact page, but you can configure it as you like.</li>
+</ol>
+<p>The components will work out of the box if you accept the default values.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/set-your-settings.png" width="635" height="357" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					</div>
+					</div>					<div class="clarify-clear"></div>		<div class="rule">
+			<img src="images/ui/rule.png" alt="" /> 
+		</div>					<div id="clarify-step-7" class="clarify-step-container">						<h2 class="clarify-step-title">Update your Page Layout</h2>						<div class="clarify-step-instructions"><p>This step should be taken for EACH page layout that you want to see the grid on. The Household layout, the Organization layout, and the Contact layout are good starting places.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/update-your-page-layout.png" width="1282" height="518" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					<div class="clarify-sub-steps-container">
+					<div id="clarify-step-8" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Get VF Pages</h3>						<div class="clarify-step-instructions"><p>Select &quot;Visualforce Pages&quot; in the component chooser.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/get-vf-pages.png" width="1037" height="231" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-9" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Create a new 1-Column Section</h3>						<div class="clarify-step-instructions"><p>Create a new 1-column section where you want the grid to appear on your page layout. Do not display the section header on edit.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/create-a-new-1-column-section.png" width="525" height="329" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-10" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Drag the component into the page layout</h3>						<div class="clarify-step-instructions"><p>Drag <span style="color: rgb(187,0,0)"><code>AccountDonationHistory</code></span> (or <span style="color: rgb(187,0,0)"><code>ContactDonationHistory</code></span>) into your new section</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/drag-the-component-into-the-page-layout.png" width="1040" height="203" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-11" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Edit the page settings</h3>						<div class="clarify-step-instructions"><p>Hover over your VF page block, and click the wrench to edit settings.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/edit-the-page-settings.png" width="1014" height="257" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-12" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Set the page properties</h3>						<div class="clarify-step-instructions"><p><span style="color: rgb(38,38,38)">Leave the width at 100%, and make sure to check &quot;Show scrollbars&quot;.</span></p>
+<p><span style="color: rgb(38,38,38)">Visualforce pages in page layouts have a fixed height. The default height of 200px will show 6 rows of the table. Depending on how many years your average donor has been with your organization, you may want to increase or decrease the size of the box. By checking &quot;show scrollbars&quot;, you'll be able to scroll within the IFrame, but if you consistently have donors with over 4 years of donation history, you might consider a larger height.</span></p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/set-the-page-properties.png" width="433" height="225" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					<div id="clarify-step-16" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Rinse and repeat for other page layouts</h3>						<div class="clarify-step-instructions"><p>Any Contact or Account page layout can have the VF page added, so go make sure it's everywhere you need to see doantion history.</p></div>					</div>					<div class="clarify-clear"></div>					</div>
+					</div>					<div class="clarify-clear"></div>		<div class="rule">
+			<img src="images/ui/rule.png" alt="" /> 
+		</div>					<div id="clarify-step-15" class="clarify-step-container">						<h2 class="clarify-step-title">Feel an overwhelming sense of success!</h2>						<div class="clarify-step-instructions"><p>Once you save your page layout, the donation history will be right there for you and for your users.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/feel-an-overwhelming-sense-of-success-.png" width="1257" height="581" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					<div class="clarify-sub-steps-container">
+					<div id="clarify-step-17" class="clarify-sub-step-container">						<h3 class="clarify-step-title">Share it with your team!</h3>						<div class="clarify-step-instructions"><p>However you communicate with your users, make sure to let them know that there's a new feature, and solicit their feedback.</p></div>
+												<div class="clarify-step-image-wrapper">
+							<div class="clarify-step-image-container">
+								<img src="./images/docs/installing-the-donation-history-page-layout-component/share-it-with-your-team-.png" width="594" height="475" class="clarify-step-image" alt="" />
+								
+							</div>
+						</div>					</div>					<div class="clarify-clear"></div>					</div>
+					</div>					<div class="clarify-clear"></div>      </div>    </div>
+    <div class="rule">
+			<img src="images/ui/rule.png" alt="" /> 
+		</div>
+    <div class="footer">
+      <p></p>
+    </div>
+  </div>
+</body>
+</html>
