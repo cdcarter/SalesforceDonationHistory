@@ -55,14 +55,12 @@ public with sharing class DonationHistoryGridController {
     public String Opp_Types_to_Exclude {get;set;}
     public String Opportunity_Type_Field {get;set;}
     public String Roles_to_Exclude {get;set;}
-    public Boolean DisplayRecordCounts {get;set;}
 
     public DonationHistoryGridController() {
         this.IsCalendarYear = false;
         this.Opp_Types_to_Exclude = null;
         this.Opportunity_Type_Field = 'RecordType.Name';
         this.Roles_to_Exclude = 'Donor;Household Member';
-        this.DisplayRecordCounts = false;
 
     }
     // this is a horrific hacky way to solve the problem.
@@ -96,27 +94,17 @@ public with sharing class DonationHistoryGridController {
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
         // TODO: possibly limit RT summary to just primary contact donations
-        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, ';
-        if (DisplayRecordCounts){
-            cubedSummaryQuery += 'COUNT(id) TotalAmount, ';
-        } else {
-            cubedSummaryQuery += 'SUM(Amount) TotalAmount, ';
-        }
-        cubedSummaryQuery +=       'GROUPING('+Opportunity_Type_Field+') grpType ' +
+        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, SUM(Amount) TotalAmount, '+
+                                   'GROUPING('+Opportunity_Type_Field+') grpType ' +
                                    'FROM Opportunity ' +
                                    'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
                                    'AND '+Opportunity_Type_Field+' NOT IN : types_to_exclude '+
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), '+Opportunity_Type_Field+') ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
-		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, ';
-        if (DisplayRecordCounts){
-            cubedContactRolesQuery += 'COUNT(id) TotalAmount, Role role ';
-        } else {
-            cubedContactRolesQuery += 'SUM(Opportunity.Amount) TotalAmount, Role role ';
-        }
-
-        cubedContactRolesQuery +=       'FROM OpportunityContactRole ' + 
+		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
+                                        'SUM(Opportunity.Amount) TotalAmount, Role role ' +
+                                        'FROM OpportunityContactRole ' + 
                                         'WHERE Opportunity.IsWon = True '+
                                         'AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0) '+
                                         'AND ContactId IN : contactIds '+
@@ -252,31 +240,42 @@ public with sharing class DonationHistoryGridController {
         // it's a complicated set of loops, so i'm leaving in the debug statements in case anyone
         // has to figure out what is going on. They're really great and explain the algorithm.
 
-        // donationRows.keySet is a DESC sorted list of years
+        // donationRows.keySet is an ASC sorted list of years
 		List<Integer> temp = new List<Integer>(donationRows.keySet()); 
+        temp.sort();
+        //system.debug('current fys');
+        //system.debug(temp);
        	this.FiscalYears = new List<Integer>();
         for(Integer i=0; i < temp.size(); i++) {
-            //if(i>0)
+           // if(i>0)
             //	system.debug(String.format('temp[i] = {0}, fy[size-1] = {1}',
-            //    new List<String>{String.valueOf(temp[i]+1),
-            //    String.valueOf(this.FiscalYears[this.FiscalYears.size()-1])}));
+              //  new List<String>{String.valueOf(temp[i]+1),
+               // String.valueOf(this.FiscalYears[this.FiscalYears.size()-1])}));
             
             if(i>0 && temp[i]+1 != this.FiscalYears[this.FiscalYears.size()-1]) {
-               // system.debug('missing yrs detected');
+                //system.debug('missing yrs detected');
                 Integer currentYear = this.FiscalYears[this.FiscalYears.size()-1];
-                Integer yearsToAdd = currentYear-temp[i]-1;
+                //system.debug(String.format('{0} is current year',new List<String>{String.valueOf(currentYear)}));
+                Integer yearsToAdd = temp[i]-currentYear-1;
                 //system.debug(String.format('{0} yrs missing',new list<String>{String.valueof(yearsToAdd)}));
                 for(integer j = 1; j<= yearsToAdd; j++) {
-                    //system.debug(String.format('adding {0}',new List<String>{String.valueOf(currentYear-j)}));
-                	this.FiscalYears.add(currentYear-j);
-                    this.donationRows.put(currentYear-j, new DonationRow(currentYear-j,types,contactRoles));
+                    Integer yrToAdd = currentYear+j;
+                    //system.debug(String.format('adding {0}',new List<String>{String.valueOf(yrToAdd)}));
+                	this.FiscalYears.add(yrToAdd);
+                    this.donationRows.put(yrToAdd, new DonationRow(yrToAdd,types,contactRoles));
                 }
             }
             //system.debug(String.format('adding year with donations {0}',new List<String>{String.valueOf(temp[i])}));
             this.FiscalYears.add(temp[i]);
         }
 
-        System.debug(this.donationRows);
+        //now re sort the list backward
+        temp = new List<Integer>();
+        for(Integer i = this.FiscalYears.size()-1; i>=0; i--) {
+            temp.add(this.FiscalYears[i]);
+        }
+        this.FiscalYears = temp;
+        //System.debug(this.donationRows);
     }
     
     public class DonationRow {

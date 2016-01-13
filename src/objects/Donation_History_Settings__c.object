@@ -6,6 +6,7 @@
     <fields>
         <fullName>IsCalendarYear__c</fullName>
         <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
         <description>This checkbox indicates to the pagelets that even if a fiscal year is set, the summary should be by calendar year.</description>
         <externalId>false</externalId>
         <inlineHelpText>This checkbox indicates to the pagelets that even if a fiscal year is set, the summary should be by calendar year.</inlineHelpText>
@@ -15,6 +16,7 @@
     </fields>
     <fields>
         <fullName>Opp_Types_to_Exclude_Acc__c</fullName>
+        <deprecated>false</deprecated>
         <description>A semicolon separated list of the opportunity types to exclude for the Account pagelet. These should be possible values of whatever your Opportunity Type Field is.</description>
         <externalId>false</externalId>
         <inlineHelpText>A semicolon separated list of the opportunity types to exclude for the Account pagelet. These should be possible values of whatever your Opportunity Type Field is.</inlineHelpText>
@@ -27,6 +29,7 @@
     </fields>
     <fields>
         <fullName>Opp_Types_to_Exclude_Con__c</fullName>
+        <deprecated>false</deprecated>
         <description>A semicolon separated list of the opportunity types to exclude for the contact pagelet. These should be possible values of whatever your Opportunity Type Field is.</description>
         <externalId>false</externalId>
         <inlineHelpText>A semicolon separated list of the opportunity types to exclude for the contact pagelet. These should be possible values of whatever your Opportunity Type Field is.</inlineHelpText>
@@ -40,6 +43,7 @@
     <fields>
         <fullName>Opportunity_Type_Field__c</fullName>
         <defaultValue>&quot;RecordType.Name&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <description>This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices.</description>
         <externalId>false</externalId>
         <inlineHelpText>This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices.</inlineHelpText>
@@ -51,18 +55,9 @@
         <unique>false</unique>
     </fields>
     <fields>
-        <fullName>Record_Counts_Instead_of_Sums__c</fullName>
-        <defaultValue>false</defaultValue>
-        <description>Use this parameter to show the number of donations in each type/role per year instead of the amount donated.</description>
-        <externalId>false</externalId>
-        <inlineHelpText>Use this parameter to show the number of donations in each type/role per year instead of the amount donated.</inlineHelpText>
-        <label>Record Counts Instead of Sums</label>
-        <trackTrending>false</trackTrending>
-        <type>Checkbox</type>
-    </fields>
-    <fields>
         <fullName>Roles_to_Exclude_Acc__c</fullName>
         <defaultValue>&quot;Donor;Household Member&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <description>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Account donation history pagelet. Most users exclude &quot;Donor&quot; and &quot;Household Member&quot; so as to only see soft credits, but there are reasons you may want to exclude others or include those.</description>
         <externalId>false</externalId>
         <inlineHelpText>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Account donation history pagelet. Most users exclude &quot;Donor&quot; and &quot;Household Member&quot; so as to only see soft credits.</inlineHelpText>
@@ -76,6 +71,7 @@
     <fields>
         <fullName>Roles_to_Exclude_Con__c</fullName>
         <defaultValue>&quot;Donor;Household Member&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <description>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Contact donation history pagelet. Most users exclude &quot;Donor&quot; and &quot;Household Member&quot; so as to only see soft credits, but there are reasons you may want to exclude others or include those.</description>
         <externalId>false</externalId>
         <inlineHelpText>A semicolon separated list of the Opportunity Contact Roles to not summarize on the Contact donation history pagelet. Most users exclude &quot;Donor&quot; and &quot;Household Member&quot; so as to only see soft credits.</inlineHelpText>

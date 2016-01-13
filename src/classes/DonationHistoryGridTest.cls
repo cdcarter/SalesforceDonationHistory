@@ -55,9 +55,9 @@
         ext.objectId = con.id;
         ext.getDoEverything();
         Test.stopTest();
-
-        System.assertEquals(200,ext.donationRows.get(2016).TypesTotal);
-        System.assertEquals(0,ext.donationRows.get(2016).RoleTotal);
+        
+        System.assertEquals(200,ext.donationRows.get(2015).TypesTotal);
+        System.assertEquals(0,ext.donationRows.get(2015).RoleTotal);
     }
 
 
