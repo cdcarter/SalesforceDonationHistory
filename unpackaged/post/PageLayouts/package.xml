@@ -1,59 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Layouts</fullName>
-    <types>
-        <members>DonationHistoryGridController</members>
-        <name>ApexClass</name>
-    </types>
-    <types>
-        <members>DonationHistoryGrid</members>
-        <name>ApexComponent</name>
-    </types>
-    <types>
-        <members>AccountDonationHistory</members>
-        <members>ContactDonationHistory</members>
-        <name>ApexPage</name>
-    </types>
-    <types>
-        <members>Donation_History_Settings__c.IsCalendarYear__c</members>
-        <members>Donation_History_Settings__c.Opp_Types_to_Exclude_Acc__c</members>
-        <members>Donation_History_Settings__c.Opp_Types_to_Exclude_Con__c</members>
-        <members>Donation_History_Settings__c.Opportunity_Type_Field__c</members>
-        <members>Donation_History_Settings__c.Record_Counts_Instead_of_Sums__c</members>
-        <members>Donation_History_Settings__c.Roles_to_Exclude_Acc__c</members>
-        <members>Donation_History_Settings__c.Roles_to_Exclude_Con__c</members>
-        <name>CustomField</name>
-    </types>
-    <types>
-        <members>Alert_Account_No_Hard_Credits</members>
-        <members>Alert_Account_No_Soft_Credit</members>
-        <members>Alert_No_Data</members>
-        <members>All_Time_Footer</members>
-        <members>Contact_Role_Footer</members>
-        <members>Types_Total_Header</members>
-        <members>Year_Header</members>
-        <name>CustomLabel</name>
-    </types>
-    <types>
-        <members>CustomLabels</members>
-        <name>CustomLabels</name>
-    </types>
-    <types>
-        <members>Donation_History_Settings__c</members>
-        <name>CustomObject</name>
-    </types>
+    <fullName>PageLayouts</fullName>
     <types>
         <members>Account-Account Layout</members>
         <members>Contact-Contact Layout</members>
         <name>Layout</name>
-    </types>
-    <types>
-        <members>SLDS092</members>
-        <name>StaticResource</name>
-    </types>
-    <types>
-        <members>Account.Billing</members>
-        <name>WebLink</name>
     </types>
     <version>34.0</version>
 </Package>
