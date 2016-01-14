@@ -37,4 +37,8 @@ If you are on a unix based system, the following commands should work:
             </sequential>
         </for>
     </target>
+
+    <target name="postDeployCI">
+      <antcall target="deployUnpackagedPost" />
+    </target>
 </project>

@@ -1,6 +1,6 @@
 /*
     Copyright (c)2015 Christian Carter (@cdcarter)
-    Inspired by Contact Giving Totals, Evan Callahan, copyright (c) 2010 Groundwire 
+    Inspired by Contact Giving Totals, Evan Callahan, copyright (c) 2010 Groundwire
     https://github.com/Groundwire/GWBase/blob/master/src/pages/ContactTotalsByRT.page
 
     This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
  * @date October, 2015
  * @group DonationHistory
  * @description DonationHistoryControllerExtension is an extension of the
- * standard Account and Contact controllers, to show Donation History for 
+ * standard Account and Contact controllers, to show Donation History for
  * a constituent, summarized by both RecordType and Fiscal Year.
  */
 public with sharing class DonationHistoryGridController {
@@ -55,13 +55,14 @@ public with sharing class DonationHistoryGridController {
     public String Opp_Types_to_Exclude {get;set;}
     public String Opportunity_Type_Field {get;set;}
     public String Roles_to_Exclude {get;set;}
+    public Boolean DisplayRecordCounts {get;set;}
 
     public DonationHistoryGridController() {
         this.IsCalendarYear = false;
         this.Opp_Types_to_Exclude = null;
         this.Opportunity_Type_Field = 'RecordType.Name';
         this.Roles_to_Exclude = 'Donor;Household Member';
-
+        this.DisplayRecordCounts = false;
     }
     // this is a horrific hacky way to solve the problem.
     public void getDoEverything() {
@@ -83,34 +84,44 @@ public with sharing class DonationHistoryGridController {
         } else {
             for(Contact c : [SELECT Id FROM Contact WHERE AccountId = :this.accountId]){
                 contactIds.add(c.Id);
-            } 
+            }
         }
         List<String> types_to_exclude = new List<String>();
         if(Opp_Types_to_Exclude!= null) {
             types_to_exclude = Opp_Types_to_Exclude.split(';');
         }
-        
+
         List<String> list_roles_to_exclude = Roles_to_Exclude.split(';');
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
         // TODO: possibly limit RT summary to just primary contact donations
-        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, SUM(Amount) TotalAmount, '+
-                                   'GROUPING('+Opportunity_Type_Field+') grpType ' +
+        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, ';
+        if (DisplayRecordCounts){
+          cubedSummaryQuery += 'COUNT(id) TotalAmount, ';
+        } else {
+          cubedSummaryQuery += 'SUM(Amount) TotalAmount, ';
+        }
+        cubedSummaryQuery +=       'GROUPING('+Opportunity_Type_Field+') grpType ' +
                                    'FROM Opportunity ' +
                                    'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
                                    'AND '+Opportunity_Type_Field+' NOT IN : types_to_exclude '+
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), '+Opportunity_Type_Field+') ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
-		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
-                                        'SUM(Opportunity.Amount) TotalAmount, Role role ' +
-                                        'FROM OpportunityContactRole ' + 
+		    String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, ';
+
+        if(DisplayRecordCounts) {
+          cubedContactRolesQuery += 'COUNT(id) TotalAmount, Role role ';
+        } else {
+          cubedContactRolesQuery += 'SUM(Opportunity.Amount) TotalAmount, Role role ';
+        }
+        cubedContactRolesQuery +=       'FROM OpportunityContactRole ' +
                                         'WHERE Opportunity.IsWon = True '+
                                         'AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0) '+
                                         'AND ContactId IN : contactIds '+
                                         'AND Role NOT IN : list_roles_to_exclude '+
                                         'GROUP BY CUBE(FISCAL_YEAR(Opportunity.CloseDate), Role) '+
-                                        'ORDER BY FISCAL_YEAR(Opportunity.CloseDate) DESC';       
+                                        'ORDER BY FISCAL_YEAR(Opportunity.CloseDate) DESC';
 
         if(IsCalendarYear) {
             cubedSummaryQuery = cubedSummaryQuery.replace('FISCAL_YEAR', 'CALENDAR_YEAR');
@@ -119,7 +130,7 @@ public with sharing class DonationHistoryGridController {
 
         List<AggregateResult> cubedSummary = Database.query(cubedSummaryQuery);
         List<AggregateResult> cubedContactRoles = Database.query(cubedContactRolesQuery);
-        
+
         // Get all represeted RTs and OCRs.
         // if we allow arbitrary field name to group by, how do we get all the possible values
         // even ones not in this set?
@@ -131,15 +142,15 @@ public with sharing class DonationHistoryGridController {
                                          'GROUP BY '+Opportunity_Type_Field;
 
         List<AggregateResult> typesSummary = Database.query(typesSummaryQuery);
-       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role 
-                                                     FROM OpportunityContactRole 
-                                                     WHERE Opportunity.IsWon = True 
-                                                       AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0)  
-                                                       AND ContactId IN: contactIds 
-                                                       AND Role NOT IN :list_roles_to_exclude 
+       	List<AggregateResult> contactRolesSummary = [SELECT Count(Id), Role role
+                                                     FROM OpportunityContactRole
+                                                     WHERE Opportunity.IsWon = True
+                                                       AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0)
+                                                       AND ContactId IN: contactIds
+                                                       AND Role NOT IN :list_roles_to_exclude
                                                      GROUP BY Role];
-        
-        // create the list of typeNames 
+
+        // create the list of typeNames
         this.types = new List<String>();
        	for(AggregateResult agg : typesSummary) {
             types.add((string)agg.get('name'));
@@ -149,7 +160,7 @@ public with sharing class DonationHistoryGridController {
         for(AggregateResult agg : contactRolesSummary) {
             contactRoles.add((string)agg.get('role'));
         }
-        
+
         for(AggregateResult agg : cubedSummary) {
             // a row can contain FY, RTName, Both, or neither
             if(agg.get('fy')!= null && agg.get('grpType') == 0) {
@@ -204,7 +215,7 @@ public with sharing class DonationHistoryGridController {
                 this.AllTime = (Decimal)agg.get('TotalAmount');
             }
         }
-        
+
         // now that we've figured out the record types, let's do soft credits. exact same logic here.
         for(AggregateResult agg : cubedContactRoles) {
             if(agg.get('fy')!= null && agg.get('role') != null) {
@@ -241,7 +252,7 @@ public with sharing class DonationHistoryGridController {
         // has to figure out what is going on. They're really great and explain the algorithm.
 
         // donationRows.keySet is an ASC sorted list of years
-		List<Integer> temp = new List<Integer>(donationRows.keySet()); 
+		List<Integer> temp = new List<Integer>(donationRows.keySet());
         temp.sort();
         //system.debug('current fys');
         //system.debug(temp);
@@ -251,7 +262,7 @@ public with sharing class DonationHistoryGridController {
             //	system.debug(String.format('temp[i] = {0}, fy[size-1] = {1}',
               //  new List<String>{String.valueOf(temp[i]+1),
                // String.valueOf(this.FiscalYears[this.FiscalYears.size()-1])}));
-            
+
             if(i>0 && temp[i]+1 != this.FiscalYears[this.FiscalYears.size()-1]) {
                 //system.debug('missing yrs detected');
                 Integer currentYear = this.FiscalYears[this.FiscalYears.size()-1];
@@ -277,7 +288,15 @@ public with sharing class DonationHistoryGridController {
         this.FiscalYears = temp;
         //System.debug(this.donationRows);
     }
-    
+
+    public string getValueString() {
+      if(DisplayRecordCounts) {
+        return '{0}';
+      } else {
+        return '{0, number, currency}';
+      }
+    }
+
     public class DonationRow {
         public Map<String,Decimal> typeToTotal {get;set;}
         public Map<String,Decimal> roleToTotal {get;set;}
@@ -290,7 +309,7 @@ public with sharing class DonationHistoryGridController {
       		}
             set;
         }
-        
+
         public Decimal RoleTotal {
             get {
                 if(this.RoleTotal == null) { this.RoleTotal = 0;}
@@ -308,6 +327,6 @@ public with sharing class DonationHistoryGridController {
             for(String role : contactRoles) {
                 this.roleToTotal.put(role,0);
             }
-        }        
+        }
     }
 }
