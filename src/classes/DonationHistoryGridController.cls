@@ -289,6 +289,14 @@ public with sharing class DonationHistoryGridController {
         //System.debug(this.donationRows);
     }
 
+    public string getValueString() {
+      if(DisplayRecordCounts) {
+        return '{0}';
+      } else {
+        return '{0, number, currency}';
+      }
+    }
+
     public class DonationRow {
         public Map<String,Decimal> typeToTotal {get;set;}
         public Map<String,Decimal> roleToTotal {get;set;}

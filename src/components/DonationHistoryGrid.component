@@ -29,10 +29,9 @@
 	                </apex:outputText>
 	                <apex:outputText value="{!donationRows[row].typeToTotal[rt]}" rendered="{!RecordCounts}"/>
 	                <apex:facet name="footer">
-	                    <apex:outputText value="{0, number, currency}" rendered="{!NOT(RecordCounts)}">
+	                    <apex:outputText value="{!valueString}" >
 	                        <apex:param value="{!typeTotals[rt]}"/>
 	                    </apex:outputText>
-	                    <apex:outputText value="{!typeTotals[rt]}" rendered="{!RecordCounts}"/>
 	                </apex:facet>
 	            </apex:column>
 	        </apex:repeat>
@@ -44,10 +43,9 @@
 	            </apex:outputText>
 	            <apex:outputText value="{!donationRows[row].TypesTotal}" rendered="{!RecordCounts}"/>
 	         	<apex:facet name="footer">
-	            	<apex:outputText value="{0, number, currency}" rendered="{!NOT(RecordCounts)}">
+	            	<apex:outputText value="{!valueString}">
 	                	<apex:param value="{!AllTime}"/>
 	                </apex:outputText>
-	                <apex:outputText value="{!AllTime}" rendered="{!RecordCounts}"/>
 	            </apex:facet>
 	        </apex:column>
 
@@ -59,10 +57,9 @@
 	                </apex:outputText>
 	                <apex:outputText value="{!donationRows[row].roleToTotal[role]}" rendered="{!RecordCounts}"/>
 	                <apex:facet name="footer">
-	                    <apex:outputText value="{0, number, currency}" rendered="{!NOT(RecordCounts)}">
+	                    <apex:outputText value="{!valueString}">
 	                        <apex:param value="{!roleTotals[role]}"/>
 	                    </apex:outputText>
-	                    <apex:outputText value="{!roleTotals[role]}" rendered="{!RecordCounts}"/>
 	                </apex:facet>
 	            </apex:column>
 	        </apex:repeat>
@@ -74,10 +71,9 @@
 	            </apex:outputText>
 	            <apex:outputText value="{!donationRows[row].RoleTotal}" rendered="{!RecordCounts}"/>
 	         	<apex:facet name="footer">
-	            	<apex:outputText value="{0, number, currency}" rendered="{!NOT(RecordCounts)}">
+	            	<apex:outputText value="{!valueString}">
 	                	<apex:param value="{!RolesAllTime}"/>
 	                </apex:outputText>
-	                <apex:outputText value="{!RolesAllTime}" rendered="{!RecordCounts}"/>
 	            </apex:facet>
 	        </apex:column>
 	    </apex:dataTable>
