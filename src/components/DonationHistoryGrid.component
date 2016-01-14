@@ -4,9 +4,10 @@
 	<apex:attribute name="HardCreditField" description="This is the field that opportunities will be summarized by in the hard credit table. RecordType and Opportunity Type are both common choices." type="String" required="false" assignTo="{!Opportunity_Type_Field}" default="Type" access="global"/>
 	<apex:attribute name="TypesToExclude" description=" semicolon separated list of the opportunity types to exclude for the  pagelet. These should be possible values of whatever your Opportunity Type Field is." type="String" required="false" assignTo="{!Opp_Types_to_Exclude}" access="global"/>
 	<apex:attribute name="RolesToExclude" description="A semicolon separated list of the Opportunity Contact Roles to not summarize on the  donation history pagelet." type="String" required="false" assignTo="{!Roles_To_Exclude}" default="Donor;Household Member" access="global"/>
+	<apex:attribute name="RecordCounts" description="Indicates that the component should show record counts for each type/role instead of total amounts" type="Boolean" assignTo="{!DisplayRecordCounts}" default="false" access="global"/>
 
 	<apex:stylesheet value="{!URLFOR($Resource.SLDS092, 'assets/styles/salesforce-lightning-design-system-vf.css')}" />
-	
+
 	{!DoEverything}
 
 	<style>
@@ -19,7 +20,7 @@
 	            <apex:outputText value="{!donationRows[row].fiscalYear}"/>
 	            <apex:facet name="footer">{!$Label.All_Time_Footer}</apex:facet>
 	        </apex:column>
-	
+
 	        <apex:repeat value="{!types}" var="rt" rendered="{!NOT(ISBLANK(AllTime))}">
 	            <apex:column >
 	                <apex:facet name="header">{!rt}</apex:facet>
@@ -33,7 +34,7 @@
 	                </apex:facet>
 	            </apex:column>
 	        </apex:repeat>
-	        
+
 	        <apex:column rendered="{!NOT(ISBLANK(AllTime))}">
 	            <apex:facet name="header">{!$Label.Types_Total_Header}</apex:facet>
 	            <apex:outputText value="{0, number, currency}">
@@ -45,7 +46,7 @@
 	                </apex:outputText>
 	            </apex:facet>
 	        </apex:column>
-	        
+
 	        <apex:repeat value="{!contactRoles}" var="role" rendered="{!NOT(ISBLANK(RolesAllTime))}">
 	            <apex:column >
 	                <apex:facet name="header">{!role}</apex:facet>
@@ -58,8 +59,8 @@
 	                    </apex:outputText>
 	                </apex:facet>
 	            </apex:column>
-	        </apex:repeat> 
-	        
+	        </apex:repeat>
+
 	        <apex:column rendered="{!NOT(ISBLANK(RolesAllTime))}">
 	            <apex:facet name="header">{!$Label.Contact_Role_Footer}</apex:facet>
 	            <apex:outputText value="{0, number, currency}">
@@ -72,15 +73,15 @@
 	            </apex:facet>
 	        </apex:column>
 	    </apex:dataTable>
-	
+
 	    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-	texture" html-role="alert" rendered="{!FiscalYears.size == 0}">
 	        <h2>{!$Label.Alert_No_Data}</h2>
 	    </apex:outputPanel>
-	
+
 	    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-	texture" html-role="alert" rendered="{!AND(ISBLANK(RolesAllTime),FiscalYears.size != 0)}">
 	        <h2>{!$Label.Alert_Account_No_Soft_Credit}</h2>
 	    </apex:outputPanel>
-	
+
 	    <apex:outputPanel layout="block" styleClass="slds-notify slds-notify--alert slds-theme--inverse-text slds-theme--alert-	texture" html-role="alert" rendered="{!AND(ISBLANK(AllTime),FiscalYears.size != 0)}">
 	        <h2>{!$Label.Alert_Account_No_Hard_Credits}</h2>
 	    </apex:outputPanel>

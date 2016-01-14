@@ -55,13 +55,14 @@ public with sharing class DonationHistoryGridController {
     public String Opp_Types_to_Exclude {get;set;}
     public String Opportunity_Type_Field {get;set;}
     public String Roles_to_Exclude {get;set;}
+    public Boolean DisplayRecordCounts {get;set;}
 
     public DonationHistoryGridController() {
         this.IsCalendarYear = false;
         this.Opp_Types_to_Exclude = null;
         this.Opportunity_Type_Field = 'RecordType.Name';
         this.Roles_to_Exclude = 'Donor;Household Member';
-
+        this.DisplayRecordCounts = false;
     }
     // this is a horrific hacky way to solve the problem.
     public void getDoEverything() {
@@ -94,17 +95,27 @@ public with sharing class DonationHistoryGridController {
         // right now, we're grabbing the full account's donations even for a contact level request.
         // question out to caroline whether or not that's appropriate
         // TODO: possibly limit RT summary to just primary contact donations
-        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, SUM(Amount) TotalAmount, '+
-                                   'GROUPING('+Opportunity_Type_Field+') grpType ' +
+        String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, ';
+        if (DisplayRecordCounts){
+          cubedSummaryQuery += 'COUNT(id) TotalAmount, '
+        } else {
+          cubedSummaryQuery += 'SUM(Amount) TotalAmount, ';
+        }
+        cubedSummaryQuery +=       'GROUPING('+Opportunity_Type_Field+') grpType ' +
                                    'FROM Opportunity ' +
                                    'WHERE IsWon = True AND (Amount > 0 OR Amount < 0) AND AccountId = :accountId ' +
                                    'AND '+Opportunity_Type_Field+' NOT IN : types_to_exclude '+
                                    'GROUP BY CUBE(FISCAL_YEAR(CloseDate), '+Opportunity_Type_Field+') ' +
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
-		String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, '+
-                                        'SUM(Opportunity.Amount) TotalAmount, Role role ' +
-                                        'FROM OpportunityContactRole ' +
+		    String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, ';
+        
+        if(DisplayRecordCounts) {
+          cubedContactRolesQuery += 'COUNT(id) TotalAmount, Role role ';
+        } else {
+          cubedContactRolesQuery += 'SUM(Opportunity.Amount) TotalAmount, Role role ';
+        }
+        cubedContactRolesQuery +=       'FROM OpportunityContactRole ' +
                                         'WHERE Opportunity.IsWon = True '+
                                         'AND (Opportunity.Amount > 0 OR Opportunity.Amount < 0) '+
                                         'AND ContactId IN : contactIds '+
