@@ -265,7 +265,7 @@ public with sharing class DonationHistoryGridController {
                     this.donationRows.put(yrToAdd, new DonationRow(yrToAdd,types,contactRoles));
                 }
             }
-            system.debug(String.format('adding year with donations {0}',new List<String>{String.valueOf(temp[i])}));
+            //system.debug(String.format('adding year with donations {0}',new List<String>{String.valueOf(temp[i])}));
             this.FiscalYears.add(temp[i]);
         }
 
