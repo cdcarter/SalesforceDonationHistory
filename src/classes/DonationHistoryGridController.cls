@@ -97,7 +97,7 @@ public with sharing class DonationHistoryGridController {
         // TODO: possibly limit RT summary to just primary contact donations
         String cubedSummaryQuery = 'SELECT FISCAL_YEAR(CloseDate) fy, '+Opportunity_Type_Field+' typeName, ';
         if (DisplayRecordCounts){
-          cubedSummaryQuery += 'COUNT(id) TotalAmount, '
+          cubedSummaryQuery += 'COUNT(id) TotalAmount, ';
         } else {
           cubedSummaryQuery += 'SUM(Amount) TotalAmount, ';
         }
@@ -109,7 +109,7 @@ public with sharing class DonationHistoryGridController {
                                    'ORDER BY FISCAL_YEAR(CloseDate) DESC';
 
 		    String cubedContactRolesQuery = 'SELECT FISCAL_YEAR(Opportunity.CloseDate) fy, ';
-        
+
         if(DisplayRecordCounts) {
           cubedContactRolesQuery += 'COUNT(id) TotalAmount, Role role ';
         } else {
