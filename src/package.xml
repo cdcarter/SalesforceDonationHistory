@@ -20,6 +20,7 @@
         <members>Donation_History_Settings__c.Opp_Types_to_Exclude_Acc__c</members>
         <members>Donation_History_Settings__c.Opp_Types_to_Exclude_Con__c</members>
         <members>Donation_History_Settings__c.Opportunity_Type_Field__c</members>
+        <members>Donation_History_Settings__c.Record_Counts_Instead_of_Sums__c</members>
         <members>Donation_History_Settings__c.Roles_to_Exclude_Acc__c</members>
         <members>Donation_History_Settings__c.Roles_to_Exclude_Con__c</members>
         <name>CustomField</name>
